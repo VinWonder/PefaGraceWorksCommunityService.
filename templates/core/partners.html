@@ -1,0 +1,88 @@
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}Partners{% endblock %}
+{% block content %}
+{% static 'img/illustrative/kisumu-lakefront.jpg' as partners_bg %}
+{% include "partials/_page_header.html" with title="Partners" subtitle="Sustainable community transformation is best achieved together." bg=partners_bg credit="Photo: Victor Ochieng' / Wikimedia Commons, CC BY-SA 2.0" %}
+
+{# ===== Philosophy with photo collage ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6" data-reveal>
+        <div class="collage">
+          {% for p in photos %}<img class="collage-{{ forloop.counter }}" src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy">{% endfor %}
+          <span class="collage-badge"><strong>{{ count }}</strong> partners<br>and counting</span>
+        </div>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Our partnership philosophy</span>
+        <h2>Sharing resources, knowledge and compassion</h2>
+        <p class="lead">Guided by stewardship and collective service, we see every partnership as a way to multiply what each of us can do alone.</p>
+        <ul class="feature-list">
+          <li><i class="bi bi-diagram-3"></i><span><strong>Aligned with public plans.</strong> Our work contributes to Kisumu's County Integrated Development Plan and the Sustainable Development Goals.</span></li>
+          <li><i class="bi bi-clipboard-data"></i><span><strong>Reported transparently.</strong> Partners receive progress updates against clear indicators.</span></li>
+          <li><i class="bi bi-people"></i><span><strong>Rooted in community.</strong> Volunteers, church networks and local committees carry the work.</span></li>
+        </ul>
+        <a href="{% url 'community:partner' %}" class="btn btn-primary btn-lg mt-2">Partner with us <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Who we work with ===== #}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Who we work with</span><h2>Our partners</h2></div>
+    {% for label, items in groups %}
+    <div class="partner-group" data-reveal>
+      <h3 class="partner-group-title">{{ label }} <span>{{ items|length }}</span></h3>
+      <div class="row g-3">
+        {% for p in items %}
+        <div class="col-md-6 col-lg-4">
+          <div class="partner-card">
+            <span class="partner-logo">{% if p.logo %}<img src="{{ p.logo.url }}" alt="">{% else %}{{ p.name|slice:":1" }}{% endif %}</span>
+            <div>
+              <h4>{% if p.website %}<a href="{{ p.website }}" target="_blank" rel="noopener">{{ p.name }} <i class="bi bi-box-arrow-up-right"></i></a>{% else %}{{ p.name }}{% endif %}</h4>
+              {% if p.description %}<p>{{ p.description }}</p>{% endif %}
+            </div>
+          </div>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+{# ===== Where partners can help: real projects ===== #}
+{% if projects %}
+<section class="section overflow-hidden">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div class="section-head mb-0"><span class="eyebrow">Where partners can help most</span><h2>Adopt a project</h2><p>Construction, equipment, training and running costs, each with a clear target.</p></div>
+      <div class="d-flex gap-2">
+        <button class="btn-round focus-prev" aria-label="Previous project"><i class="bi bi-arrow-left"></i></button>
+        <button class="btn-round focus-next" aria-label="Next project"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="swiper focus-swiper project-swiper" data-reveal>
+      <div class="swiper-wrapper">
+        {% for project in projects %}<div class="swiper-slide">{% include "programs/_project_card.html" %}</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8"><h2>Let's multiply impact together</h2><p class="mb-0">Churches, county departments, donors, companies and schools: tell us what you'd like to achieve and we'll design it with you.</p></div>
+        <div class="col-lg-4 text-lg-end"><a href="{% url 'community:partner' %}" class="btn btn-give btn-lg btn-shine">Start a conversation</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
