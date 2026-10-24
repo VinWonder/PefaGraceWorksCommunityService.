@@ -9,6 +9,7 @@ from django.utils.html import strip_tags
 from tinymce.models import HTMLField
 
 from apps.core.models import OrderedModel, TimeStampedModel
+from apps.core.storage import video_storage
 from apps.core.utils import OptimizedImagesMixin
 
 
@@ -126,7 +127,8 @@ class Video(OptimizedImagesMixin, OrderedModel):
     title = models.CharField(max_length=150)
     caption = models.CharField(max_length=255, blank=True)
     youtube_id = models.CharField(max_length=20, blank=True, help_text="The part after v= in a YouTube link")
-    file = models.FileField(upload_to="gallery/videos/", blank=True, help_text="MP4 (H.264). Keep it under ~25 MB for mobile data.")
+    file = models.FileField(upload_to="gallery/videos/", storage=video_storage, blank=True,
+                            help_text="MP4 (H.264). Keep it under ~25 MB for mobile data.")
     poster = models.ImageField(upload_to="gallery/videos/posters/", blank=True, help_text="Still image shown before the video plays.")
     album = models.ForeignKey(Album, related_name="videos", null=True, blank=True, on_delete=models.SET_NULL)
     is_featured = models.BooleanField(default=False, help_text="Show on the home page.")

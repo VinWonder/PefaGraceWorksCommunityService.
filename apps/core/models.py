@@ -2,6 +2,7 @@ from django.core.cache import cache
 from django.core.validators import RegexValidator
 from django.db import models
 
+from .storage import video_storage
 from .utils import OptimizedImagesMixin
 
 phone_validator = RegexValidator(
@@ -103,7 +104,7 @@ class HeroSlide(OptimizedImagesMixin, OrderedModel):
     image = models.ImageField(upload_to="slides/", blank=True, help_text="Landscape photo, at least 1600px wide.")
     image_credit = models.CharField(max_length=255, blank=True, help_text="Photographer and licence, if the photo isn't ours.")
     video = models.FileField(
-        upload_to="slides/video/", blank=True,
+        upload_to="slides/video/", storage=video_storage, blank=True,
         help_text="Optional short, silent MP4 loop played behind the text (the photo shows while it loads).")
     button_text = models.CharField(max_length=40, blank=True)
     button_url = models.CharField(max_length=200, blank=True)
