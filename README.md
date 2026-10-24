@@ -369,6 +369,34 @@ Tests cover: every public page renders, content seeding, help-request scoring an
 
 ## 13. Deploy to production
 
+### Option 0 — Render (free, quickest way to share a review link)
+
+The repo includes `render.yaml` (a Render *Blueprint*) and `build.sh`. Render's free disk is wiped on every
+deploy, so uploaded photos and videos are stored on **Cloudinary** (free, no card needed).
+
+1. **Cloudinary:** sign up at cloudinary.com → *Dashboard* → copy the **API environment variable**
+   (`cloudinary://<key>:<secret>@<cloud-name>`).
+2. **Render:** sign up at render.com with GitHub → **New → Blueprint** → choose this repository → **Apply**.
+   When asked, fill in `CLOUDINARY_URL`, `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL` and
+   `DJANGO_SUPERUSER_PASSWORD` (leave the PayPal keys blank until you have them).
+3. Wait for the first deploy (5–10 minutes). It creates the tables, loads the organisation profile and sample
+   events, and creates your admin login. Your link is shown at the top: `https://pefa-graceworks.onrender.com`
+   (or similar).
+4. **Photos and videos** (they are not in Git): on your laptop, copy the database's **External Database URL**
+   from Render (*pgcs-db → Connect*), then in PowerShell from the project folder:
+   ```powershell
+   pip install -r requirements-dev.txt
+   $env:DATABASE_URL = "<External Database URL>"
+   $env:CLOUDINARY_URL = "<your Cloudinary URL>"
+   python manage.py import_whatsapp_media
+   Remove-Item Env:DATABASE_URL, Env:CLOUDINARY_URL
+   ```
+   This uploads the media to Cloudinary and records it in the Render database. Refresh the site.
+
+Every `git push` to `main` redeploys automatically. Free-plan limits: the site sleeps after 15 minutes without
+visitors (the next visit takes about a minute to wake it), and the free database expires after 30 days, so
+upgrade both to a paid plan before going live.
+
 ### Option A — Docker on a VPS (recommended)
 
 Any Ubuntu 22.04/24.04 VPS with 1–2 GB RAM is enough (e.g. a Kenyan host, DigitalOcean, Hetzner, Linode).
