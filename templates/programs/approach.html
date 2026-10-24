@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}How we work{% endblock %}
+{% block content %}
+{% with hero=photos.0 %}
+{% include "partials/_page_header.html" with title="How we work" subtitle="Holistic, participatory and faith-driven: empowerment rather than dependency." bg=hero.image.url %}
+{% endwith %}
+
+{# ===== Implementation model as a timeline ===== #}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Our implementation model</span>
+      <h2>Six steps from listening to lasting change</h2>
+      <p>A structured yet flexible framework that integrates faith-based motivation, professional practice and community innovation.</p>
+    </div>
+    <ol class="model-timeline">
+      {% for s in stages %}
+      <li class="model-step" data-reveal>
+        <span class="model-num">{{ forloop.counter|stringformat:"02d" }}</span>
+        <span class="model-icon"><i class="bi bi-{% cycle 'search-heart' 'pencil-square' 'cash-coin' 'gear-wide-connected' 'graph-up-arrow' 'arrow-repeat' %}"></i></span>
+        <div class="model-body"><h3>{{ s.title }}</h3><p>{{ s.description }}</p></div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+
+{# ===== Community engagement over a photo ===== #}
+<section class="section engage-band">
+  {% with bg=photos.1 %}{% if bg %}<div class="impact-bg" style="background-image:url('{{ bg.image.url }}')" aria-hidden="true"></div>{% endif %}{% endwith %}
+  <div class="container position-relative">
+    <div class="section-head" data-reveal><span class="eyebrow eyebrow-light">Community engagement</span><h2>Communities lead, we walk alongside</h2></div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3" data-reveal><div class="glass-card"><i class="bi bi-people-fill"></i><h3>Development committees</h3><p>Local representatives coordinate activities and tell us what's working.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="1"><div class="glass-card"><i class="bi bi-bank2"></i><h3>Faith networks</h3><p>Church fellowships, youth ministries and women's groups mobilise volunteers.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="2"><div class="glass-card"><i class="bi bi-megaphone"></i><h3>Public forums</h3><p>Awareness, civic education and participatory planning workshops.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="3"><div class="glass-card"><i class="bi bi-person-raised-hand"></i><h3>Beneficiary leadership</h3><p>Households, youth and women lead projects and learn from each other.</p></div></div>
+    </div>
+  </div>
+</section>
+
+{# ===== Faith and development ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6" data-reveal>
+        <div class="photo-stack">
+          {% for p in photos|slice:"2:4" %}<img class="photo-stack-{{ forloop.counter }}" src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy">{% endfor %}
+        </div>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Faith and development together</span>
+        <h2>Prayer and practical help, side by side</h2>
+        <p class="lead">Christian values run through every program as a guide for service and integrity.</p>
+        <p class="text-muted-pg">Spiritual counselling, prayer and moral mentorship sit alongside evidence-based development work, giving a foundation for accountability, compassion and lasting progress.</p>
+        <blockquote class="pull-quote">&ldquo;Faith without works is incomplete, and God's grace compels us to act.&rdquo;</blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== MEL as progress rings ===== #}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Monitoring, evaluation and learning</span>
+      <h2>We measure what matters</h2>
+      <p>Clear indicators for each focus area, periodic reviews with stakeholders, documented success stories and feedback loops that keep us adaptable.</p>
+    </div>
+    {% if indicators %}
+    <div class="row g-4">
+      {% for i in indicators %}
+      <div class="col-sm-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,1' }}">
+        {% include "partials/_ring.html" with ind=i %}
+      </div>
+      {% endfor %}
+    </div>
+    {% endif %}
+    <div class="text-center mt-5"><a href="{% url 'core:impact' %}" class="btn btn-primary btn-lg">See our full impact <i class="bi bi-arrow-right ms-1"></i></a></div>
+  </div>
+</section>
+{% endblock %}
