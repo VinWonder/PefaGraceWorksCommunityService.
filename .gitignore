@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+# Django
+.env
+db.sqlite3
+staticfiles/
+media/*
+!media/.gitkeep
+*.log
+# Editors / OS
+.idea/
+.DS_Store
+Thumbs.db
+.coverage
+htmlcov/
+# Original WhatsApp photos/videos: they show inmates and children and stay out of this public repo
+# until consent is confirmed. Copy them into static/img on the server, then run
+#   python manage.py import_whatsapp_media
+static/img/WhatsApp*
