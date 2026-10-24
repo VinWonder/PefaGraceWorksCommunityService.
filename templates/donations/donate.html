@@ -1,0 +1,161 @@
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}Donate{% endblock %}
+{% block meta_description %}Give to PEFA GraceWorks by M-Pesa, card, PayPal or bank transfer: school fees, sanitary towels, medical camps and the community clinic in Kisumu.{% endblock %}
+{% block content %}
+<section class="donate-hero">
+  {% if header_photo %}<div class="donate-hero-bg" style="background-image:url('{{ header_photo }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative">
+    <div class="row g-5 align-items-start">
+      <div class="col-lg-5 donate-intro">
+        <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="{% url 'core:home' %}">Home</a></li><li class="breadcrumb-item active" aria-current="page">Donate</li></ol></nav>
+        <span class="hero-kicker"><span class="pulse-dot"></span> Give with grace</span>
+        <h1>Your gift keeps a child in school and a family cared for.</h1>
+        <p class="lead">Every shilling is stewarded carefully, receipted to you and reported transparently.</p>
+        <ul class="trust-list">
+          <li><i class="bi bi-shield-lock-fill"></i> Secure payments by Safaricom M-Pesa and PayPal</li>
+          <li><i class="bi bi-receipt-cutoff"></i> Instant receipt with a reference number</li>
+          <li><i class="bi bi-patch-check-fill"></i> Registered CBO{% if site.registration_number %}, Cert. {{ site.registration_number }}{% endif %}</li>
+        </ul>
+        <div class="pay-logos" aria-label="Accepted payment methods">
+          <span>M-Pesa</span><span>Visa</span><span>Mastercard</span><span>Amex</span><span>PayPal</span><span>Bank</span>
+        </div>
+      </div>
+
+      <div class="col-lg-7">
+        <form id="donate-form" method="post" class="donate-card" novalidate
+              data-card-currency="{{ card_currency }}" data-kes-per-usd="{{ kes_per_usd }}">
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{% for e in form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+          <div class="hp-field" aria-hidden="true">{{ form.website_url }}</div>
+
+          {# Step 1: how often #}
+          <div class="segmented" role="radiogroup" aria-label="How often">
+            {% for value, label in form.fields.frequency.choices %}
+            <label class="segmented-option"><input type="radio" name="frequency" value="{{ value }}" {% if form.frequency.value == value %}checked{% endif %}><span>{% if value == "monthly" %}<i class="bi bi-arrow-repeat me-1"></i>Give monthly{% else %}Give once{% endif %}</span></label>
+            {% endfor %}
+          </div>
+
+          {# Step 2: how to pay #}
+          <h2 class="donate-step"><span>1</span> Choose how to give</h2>
+          <div class="pay-methods" role="radiogroup" aria-label="Payment method">
+            {% for key, label, icon, hint in methods %}
+            <label class="pay-method">
+              <input type="radio" name="method" value="{{ key }}" {% if form.method.value == key %}checked{% endif %}>
+              <span class="pay-method-body">
+                <i class="bi bi-{{ icon }}"></i>
+                <strong>{{ label }}</strong>
+                <small>{{ hint }}</small>
+              </span>
+            </label>
+            {% endfor %}
+          </div>
+          {% for e in form.method.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+
+          {# Step 3: how much #}
+          <div data-show-for="mpesa bank card paypal">
+            <h2 class="donate-step"><span>2</span> Choose your impact</h2>
+            <div class="impact-grid" data-currency="KES">
+              {% for amount, text in impact_kes %}
+              <button type="button" class="impact-tile" data-amount="{{ amount }}"><strong>KES {{ amount|intcomma }}</strong><small>{{ text }}</small></button>
+              {% endfor %}
+            </div>
+            <div class="impact-grid" data-currency="{{ card_currency }}" hidden>
+              {% for amount, text in impact_usd %}
+              <button type="button" class="impact-tile" data-amount="{{ amount }}"><strong>{{ card_currency }} {{ amount }}</strong><small>{{ text }}</small></button>
+              {% endfor %}
+            </div>
+            <label class="form-label mt-3" for="{{ form.amount.id_for_label }}">Or enter your own amount</label>
+            <div class="amount-input">
+              <span data-currency-label>KES</span>
+              {{ form.amount }}
+            </div>
+            {% for e in form.amount.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+            <p class="impact-live" data-impact-live aria-live="polite"></p>
+            <p class="small text-muted-pg mb-0" data-show-for="card paypal"><i class="bi bi-info-circle me-1"></i>Card and PayPal gifts are charged in {{ card_currency }} (about KES {{ kes_per_usd|floatformat:0 }} per {{ card_currency }}).</p>
+          </div>
+          <div data-show-for="in_kind">
+            <h2 class="donate-step"><span>2</span> What would you like to give?</h2>
+            {% include "partials/_field.html" with field=form.in_kind_description %}
+          </div>
+
+          {# Step 4: about you #}
+          <h2 class="donate-step"><span>3</span> Your details</h2>
+          <div class="row g-3">
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.donor_name %}</div>
+            <div class="col-md-6" data-show-for="mpesa bank in_kind">{% include "partials/_field.html" with field=form.phone %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.email %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.project %}</div>
+          </div>
+          <details class="donate-more" {% if form.focus_area.value or form.message.value or form.focus_area.errors %}open{% endif %}>
+            <summary>Add a message or choose a focus area</summary>
+            <div class="pt-3">
+              {% include "partials/_field.html" with field=form.focus_area %}
+              {% include "partials/_field.html" with field=form.message %}
+            </div>
+          </details>
+          {% include "partials/_field.html" with field=form.is_anonymous %}
+
+          <button type="submit" class="btn btn-give btn-lg w-100 btn-shine donate-submit">
+            <i class="bi bi-heart-fill me-2"></i><span data-submit-label>Give now</span>
+          </button>
+          <p class="secure-note"><i class="bi bi-lock-fill"></i>
+            <span data-show-for="mpesa">You'll get a prompt on your phone for your M-Pesa PIN. We never see or store your PIN.</span>
+            <span data-show-for="card paypal">Next, you'll pay on PayPal's secure checkout. Cards work without a PayPal account; we never see your card number.</span>
+            <span data-show-for="bank">We'll show our bank details and a reference to quote.</span>
+            <span data-show-for="in_kind">We'll call you to arrange drop-off or collection.</span>
+          </p>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% include "partials/_cradle.html" %}
+</section>
+
+{% if featured_projects %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">Where your gift goes</span>
+      <h2>Choose a project to back</h2>
+      <p>Pick one on the form above, or leave it to us and we'll put your gift where it's needed most.</p>
+    </div>
+    <div class="row g-4">
+      {% for project in featured_projects %}<div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0 }}">{% include "programs/_project_card.html" %}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section bg-surface">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6" data-reveal>
+        <div class="give-aside h-100">
+          <span class="eyebrow eyebrow-light">Other ways to give</span>
+          <h2 class="h3">Paybill, bank or in person</h2>
+          {% if site.mpesa_paybill %}
+          <div class="copy-row"><div><dt>M-Pesa Paybill</dt><dd>{{ site.mpesa_paybill }}</dd></div><button type="button" class="copy-btn" data-copy="{{ site.mpesa_paybill }}" aria-label="Copy Paybill number"><i class="bi bi-copy"></i></button></div>
+          {% if site.mpesa_account %}<div class="copy-row"><div><dt>Account</dt><dd>{{ site.mpesa_account }}</dd></div><button type="button" class="copy-btn" data-copy="{{ site.mpesa_account }}" aria-label="Copy account name"><i class="bi bi-copy"></i></button></div>{% endif %}
+          {% endif %}
+          {% if site.bank_details %}<p class="small mb-0 mt-3" style="white-space:pre-line">{{ site.bank_details }}</p>{% endif %}
+          {% if not site.mpesa_paybill and not site.bank_details %}<p class="mb-0">Call <a class="text-white" href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a> to arrange a gift by cheque, cash or in kind.</p>{% endif %}
+        </div>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <div class="split-card h-100">
+          <span class="split-icon"><i class="bi bi-people-fill"></i></span>
+          <h2 class="h3">Recent supporters</h2>
+          {% if supporters %}
+          <ul class="supporter-list">
+            {% for d in supporters %}<li><span class="avatar">{{ d.public_name|first }}</span><span><strong>{{ d.public_name }}</strong> gave to {{ d.designation }}</span><small>{{ d.completed_at|naturaltime }}</small></li>{% endfor %}
+          </ul>
+          {% else %}
+          <p class="text-muted-pg">Be the first name on this list. Your gift today starts the story.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
