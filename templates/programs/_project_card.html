@@ -1,0 +1,21 @@
+{% load static humanize %}
+<a class="project-card" href="{{ project.get_absolute_url }}">
+  <div class="project-card-img">
+    {% if project.image %}<img src="{{ project.image.url }}" alt="" loading="lazy">
+    {% else %}<div class="brand-fill"><i class="bi bi-{{ project.focus_area.icon|default:'stars' }}"></i></div>{% endif %}
+    <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
+    {% if project.image_credit %}<span class="photo-credit">{{ project.image_credit }}</span>{% endif %}
+  </div>
+  <div class="project-card-body">
+    {% if project.focus_area %}<span class="project-area"><i class="bi bi-{{ project.focus_area.icon }}"></i> {{ project.focus_area }}</span>{% endif %}
+    <h3>{{ project.title }}</h3>
+    <p>{{ project.summary|truncatechars:140 }}</p>
+    {% if project.funding_goal %}
+    <div class="progress progress-grace" role="progressbar" aria-label="Funding" aria-valuenow="{{ project.progress_percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ project.progress_percent }}" style="width: {{ project.progress_percent }}%"></div></div>
+    <div class="funding-figures"><span>{{ project.progress_percent }}% funded</span><span>KES {{ project.funding_goal|floatformat:0|intcomma }}</span></div>
+    {% elif project.target_outcome %}
+    <div class="project-target"><i class="bi bi-bullseye"></i> {{ project.target_outcome|truncatechars:90 }}</div>
+    {% endif %}
+    <span class="focus-card-go mt-auto">View project <i class="bi bi-arrow-right"></i></span>
+  </div>
+</a>

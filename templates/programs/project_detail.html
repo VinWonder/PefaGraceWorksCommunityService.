@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}{{ project.title }}{% endblock %}
+{% block meta_description %}{{ project.summary }}{% endblock %}
+{% block content %}
+{% url 'programs:projects' as projects_url %}
+{% if project.image %}{% include "partials/_page_header.html" with title=project.title subtitle=project.summary parent_label="Projects" parent_url=projects_url bg=project.image.url credit=project.image_credit %}
+{% else %}{% include "partials/_page_header.html" with title=project.title subtitle=project.summary parent_label="Projects" parent_url=projects_url %}{% endif %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7" data-reveal>
+        {% if project.image %}<div class="feature-img tilt mb-4"><img src="{{ project.image.url }}" alt=""><span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>{% if project.image_credit %}<span class="photo-credit">{{ project.image_credit }}</span>{% endif %}</div>{% endif %}
+        <div class="prose">{{ project.description|safe }}</div>
+        {% if updates %}
+        <h2 class="h3 mt-5 mb-3">Updates</h2>
+        {% for u in updates %}<div class="border-start border-3 border-primary ps-3 mb-4"><div class="small text-muted-pg">{{ u.date|date:"j F Y" }}</div><h3 class="h6 mb-1">{{ u.title }}</h3><p class="mb-0">{{ u.body|linebreaksbr }}</p></div>{% endfor %}
+        {% endif %}
+      </div>
+      <aside class="col-lg-5">
+        <div class="sticky-aside">
+        <div class="give-aside">
+          <span class="badge text-bg-light mb-3">{{ project.get_status_display }}</span>
+          {% if project.target_outcome %}<h2 class="h5">Target outcome</h2><p>{{ project.target_outcome }}</p>{% endif %}
+          {% if project.funding_goal %}
+          <div class="progress progress-grace mt-4" role="progressbar" aria-label="Funding progress" aria-valuenow="{{ project.progress_percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ project.progress_percent }}" style="width: {{ project.progress_percent }}%"></div></div>
+          <dl class="row mt-3 mb-0">
+            <div class="col-6"><dt>Raised</dt><dd>KES {{ project.amount_raised|floatformat:0|intcomma }}</dd></div>
+            <div class="col-6"><dt>Goal</dt><dd>KES {{ project.funding_goal|floatformat:0|intcomma }}</dd></div>
+          </dl>
+          {% endif %}
+          <dl class="row mb-0">
+            {% if project.location %}<div class="col-6"><dt>Location</dt><dd>{{ project.location }}</dd></div>{% endif %}
+            {% if project.end_date %}<div class="col-6"><dt>Timeline</dt><dd>{{ project.start_date|date:"Y" }}–{{ project.end_date|date:"Y" }}</dd></div>{% endif %}
+          </dl>
+          {% if project.status != "completed" %}<a href="{% url 'donations:donate' %}?project={{ project.slug }}" class="btn btn-give btn-lg btn-shine w-100 mt-3"><i class="bi bi-heart-fill me-1"></i> Give to this project</a>{% endif %}
+        </div>
+        {% if recent_donations %}
+        <div class="tile mt-4"><h2 class="h6 mt-0">Recent supporters</h2>
+          <ul class="list-unstyled mb-0">{% for d in recent_donations %}<li class="d-flex justify-content-between py-1 border-bottom"><span>{{ d.public_name }}</span><span class="text-muted-pg small">{{ d.completed_at|naturaltime }}</span></li>{% endfor %}</ul>
+        </div>
+        {% endif %}
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+{% block title %}Projects{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Projects" subtitle="From a community health clinic to boreholes and bursaries: what we're building between 2025 and 2028." %}
+<section class="section pt-4">
+  <div class="container">
+    <div class="filter-bar" role="navigation" aria-label="Filter projects">
+      <a href="?" class="filter-chip {% if not status %}active{% endif %}">All projects</a>
+      {% for key, label in status_choices %}<a href="?status={{ key }}" class="filter-chip {% if status == key %}active{% endif %}">{{ label }}</a>{% endfor %}
+    </div>
+    <div class="row g-4">
+      {% for project in projects %}<div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,1' }}">{% include "programs/_project_card.html" %}</div>
+      {% empty %}<p class="text-muted-pg">No projects with this status yet.</p>{% endfor %}
+    </div>
+  </div>
+</section>
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8"><h2>Fund a whole project</h2><p class="mb-0">Churches, companies and development partners can adopt a project from start to finish. We report back on every milestone.</p></div>
+        <div class="col-lg-4 text-lg-end"><a href="{% url 'community:partner' %}" class="btn btn-give btn-lg btn-shine">Partner with us</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
