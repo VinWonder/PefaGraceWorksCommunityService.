@@ -1,0 +1,80 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Gallery{% endblock %}
+{% block meta_description %}Photos and videos from PEFA GraceWorks: prison ministry, baptisms, medical camps and children's ministry in Kisumu.{% endblock %}
+{% block content %}
+{% with cover=albums.0.cover_url %}
+{% include "partials/_page_header.html" with title="Gallery" subtitle="Moments from outreaches, prison services, baptisms, medical camps and community life." bg=cover %}
+{% endwith %}
+
+{% if albums %}
+<section class="section-tight overflow-hidden">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4" data-reveal>
+      <div><span class="eyebrow">Albums</span><h2 class="mb-0">Stories in pictures</h2></div>
+      <div class="d-flex gap-2">
+        <button class="btn-round album-prev" aria-label="Previous album"><i class="bi bi-arrow-left"></i></button>
+        <button class="btn-round album-next" aria-label="Next album"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="swiper album-swiper" data-reveal>
+      <div class="swiper-wrapper">
+        {% for album in albums %}
+        <div class="swiper-slide">
+          <a class="album-card" href="{{ album.get_absolute_url }}">
+            <img src="{% if album.cover_url %}{{ album.cover_url }}{% else %}{% static 'img/logo-mark.png' %}{% endif %}" alt="" loading="lazy">
+            <span class="album-card-body">
+              <span class="album-count"><i class="bi bi-images"></i> {{ album.photos.all|length }} photos{% if album.videos.exists %} · <i class="bi bi-play-btn"></i> {{ album.videos.count }} videos{% endif %}</span>
+              <h3>{{ album.title }}</h3>
+              {% if album.description %}<p>{{ album.description|truncatechars:120 }}</p>{% endif %}
+              <span class="focus-card-go">Open album <i class="bi bi-arrow-right"></i></span>
+            </span>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="section pt-4">
+  <div class="container">
+    {% if photos %}
+    <div class="filter-bar" role="toolbar" aria-label="Filter the gallery">
+      <button class="filter-chip active" data-filter="all" aria-pressed="true">All <span>{{ photos|length }}</span></button>
+      {% for album in albums %}{% with n=album.photos.all|length %}{% if n %}
+      <button class="filter-chip" data-filter="{{ album.slug }}" aria-pressed="false">{{ album.title|truncatechars:34 }} <span>{{ n }}</span></button>
+      {% endif %}{% endwith %}{% endfor %}
+      {% if videos %}<a class="filter-chip" href="#videos"><i class="bi bi-play-circle-fill"></i> Videos <span>{{ videos|length }}</span></a>{% endif %}
+    </div>
+
+    <div class="mosaic" data-filter-grid>
+      {% for photo in photos %}
+      <a href="{{ photo.image.url }}" class="mosaic-item glightbox {% cycle '' '' 'tall' '' 'wide' '' '' 'big' '' 'tall' '' '' %}" data-gallery="gallery" data-album="{{ photo.album.slug }}" data-title="{{ photo.caption }}" data-description="{{ photo.album.title }}">
+        <img src="{{ photo.image.url }}" alt="{{ photo.caption }}" loading="lazy">
+        <span class="mosaic-caption">{{ photo.caption }}</span>
+      </a>
+      {% endfor %}
+    </div>
+    {% else %}
+    <p class="text-muted-pg">Albums will appear here once photos are uploaded in the admin.</p>
+    {% endif %}
+  </div>
+</section>
+
+{% if videos %}
+<section class="section reels-band" id="videos">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow eyebrow-light">Videos</span>
+      <h2>Watch the work</h2>
+      <p>Tap a video to play it full screen with sound.</p>
+    </div>
+    <div class="reels-grid">
+      {% for v in videos %}<div data-reveal data-reveal-delay="{{ forloop.counter0 }}">{% include "partials/_reel.html" with reel_group="gallery-reels" %}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

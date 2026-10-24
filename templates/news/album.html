@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+{% block title %}{{ album.title }}{% endblock %}
+{% block meta_description %}{{ album.description|default:album.title }}{% endblock %}
+{% block og_image %}{% if album.cover_url %}{{ request.scheme }}://{{ request.get_host }}{{ album.cover_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block content %}
+{% url 'news:gallery' as gallery_url %}
+{% include "partials/_page_header.html" with title=album.title subtitle=album.description parent_label="Gallery" parent_url=gallery_url bg=album.cover_url %}
+<section class="section pt-4">
+  <div class="container">
+    <div class="d-flex flex-wrap gap-3 align-items-center mb-4 text-muted-pg">
+      <span><i class="bi bi-images me-1"></i>{{ photos|length }} photos</span>
+      {% if videos %}<a href="#videos"><i class="bi bi-play-circle me-1"></i>{{ videos|length }} videos</a>{% endif %}
+      {% if album.focus_area %}<a href="{{ album.focus_area.get_absolute_url }}"><i class="bi bi-{{ album.focus_area.icon }} me-1"></i>{{ album.focus_area.title }}</a>{% endif %}
+    </div>
+    <div class="mosaic">
+      {% for photo in photos %}
+      <a href="{{ photo.image.url }}" class="mosaic-item glightbox {% cycle 'big' '' '' 'tall' '' 'wide' '' '' 'tall' '' '' '' %}" data-gallery="album" data-title="{{ photo.caption }}">
+        <img src="{{ photo.image.url }}" alt="{{ photo.caption }}" loading="lazy">
+        {% if photo.caption %}<span class="mosaic-caption">{{ photo.caption }}</span>{% endif %}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% if videos %}
+<section class="section reels-band" id="videos">
+  <div class="container">
+    <h2 class="mb-4">Videos</h2>
+    <div class="reels-grid">
+      {% for v in videos %}<div data-reveal>{% include "partials/_reel.html" with reel_group="album-reels" %}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+<section class="section-tight">
+  <div class="container text-center">
+    <a href="{{ gallery_url }}" class="btn btn-quiet"><i class="bi bi-arrow-left me-1"></i> All albums</a>
+    <a href="{% url 'donations:donate' %}" class="btn btn-give btn-shine ms-2">Support this work</a>
+  </div>
+</section>
+{% endblock %}
