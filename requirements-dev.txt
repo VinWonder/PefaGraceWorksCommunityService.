@@ -2,3 +2,5 @@
 black>=24.0
 flake8>=7.0
 coverage>=7.5
+# Bundled ffmpeg so import_whatsapp_media can compress videos and make posters
+imageio-ffmpeg>=0.5
