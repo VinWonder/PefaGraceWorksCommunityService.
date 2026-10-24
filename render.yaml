@@ -1,0 +1,43 @@
+# Render Blueprint: Dashboard → New → Blueprint → pick this repo. Creates the site and its PostgreSQL database.
+databases:
+  - name: pgcs-db
+    plan: free
+    region: frankfurt
+    databaseName: pgcs_db
+    user: pgcs_user
+
+services:
+  - type: web
+    name: pefa-graceworks
+    runtime: python
+    plan: free
+    region: frankfurt
+    buildCommand: ./build.sh
+    startCommand: gunicorn config.wsgi:application -c gunicorn.conf.py
+    healthCheckPath: /robots.txt
+    envVars:
+      - key: PYTHON_VERSION
+        value: 3.12.7
+      - key: DATABASE_URL
+        fromDatabase:
+          name: pgcs-db
+          property: connectionString
+      - key: SECRET_KEY
+        generateValue: true
+      - key: DEBUG
+        value: "False"
+      - key: WEB_CONCURRENCY
+        value: "2"
+      # Filled in on the Render dashboard (sync: false keeps them out of this file)
+      - key: CLOUDINARY_URL
+        sync: false
+      - key: DJANGO_SUPERUSER_USERNAME
+        sync: false
+      - key: DJANGO_SUPERUSER_EMAIL
+        sync: false
+      - key: DJANGO_SUPERUSER_PASSWORD
+        sync: false
+      - key: PAYPAL_CLIENT_ID
+        sync: false
+      - key: PAYPAL_CLIENT_SECRET
+        sync: false
