@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Our impact{% endblock %}
+{% block content %}
+{% with hero=photos.3 %}
+{% include "partials/_page_header.html" with title="Our impact" subtitle="Measurable progress toward thriving, holistic communities, tracked with clear indicators." bg=hero.image.url %}
+{% endwith %}
+
+{# ===== Headline numbers ===== #}
+<section class="section impact-band has-photo impact-hero">
+  {% with bg=photos.0 %}{% if bg %}<div class="impact-bg" style="background-image:url('{{ bg.image.url }}')" aria-hidden="true"></div>{% endif %}{% endwith %}
+  <div class="container position-relative">
+    <span class="eyebrow eyebrow-light">By the numbers</span>
+    <h2 class="text-white mb-4">Where we are, where we're going</h2>
+    <div class="row g-4">
+      {% for s in stats %}
+      <div class="col-6 col-lg-3" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <div class="stat stat-glass">
+          <div class="num"><span data-count="{{ s.value }}">{{ s.value|intcomma }}</span><span class="suffix">{{ s.suffix }}</span></div>
+          <div class="label">{{ s.label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ===== Indicators as rings ===== #}
+{% if indicators %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">2025–2028 targets</span>
+      <h2>Progress toward our targets</h2>
+      <p>Updated by our Monitoring, Evaluation and Learning team from program registers.</p>
+    </div>
+    <div class="row g-4">
+      {% for i in indicators %}
+      <div class="col-sm-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0|divisibleby:3|yesno:'0,1' }}">{% include "partials/_ring.html" with ind=i %}</div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Milestones timeline ===== #}
+{% if milestones %}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head text-center mx-auto" data-reveal>
+      <span class="eyebrow">Milestones</span>
+      <h2>Faith turned into action</h2>
+      <p>Although still a growing organization, PGCS has already turned compassion and faith into tangible results.</p>
+    </div>
+    <ol class="milestone-timeline">
+      {% for m in milestones %}
+      <li data-reveal>
+        <span class="milestone-dot"><i class="bi bi-{{ m.icon }}"></i></span>
+        <div class="milestone-card">
+          {% if m.date %}<span class="milestone-date">{{ m.date|date:"F Y" }}</span>{% elif m.focus_area %}<span class="milestone-date">{{ m.focus_area.title }}</span>{% endif %}
+          <h3>{{ m.title }}</h3>
+          <p>{{ m.description }}</p>
+        </div>
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Impact in pictures ===== #}
+{% if photos %}
+<section class="section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div><span class="eyebrow">Impact in pictures</span><h2 class="mb-0">See the work for yourself</h2></div>
+      <a href="{% url 'news:gallery' %}" class="btn btn-quiet">Open the gallery</a>
+    </div>
+    <div class="mosaic">
+      {% for p in photos %}
+      <a href="{{ p.image.url }}" class="mosaic-item glightbox {% cycle 'big' '' '' 'tall' '' 'wide' '' '' 'tall' '' %}" data-gallery="impact" data-title="{{ p.caption }}" data-description="{{ p.album.title }}">
+        <img src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy"><span class="mosaic-caption">{{ p.caption }}</span>
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8"><h2>Help us hit the next target</h2><p class="mb-0">Every learner sponsored and every shilling for the clinic moves these numbers. Be part of the next milestone.</p></div>
+        <div class="col-lg-4 text-lg-end"><a href="{% url 'donations:donate' %}" class="btn btn-give btn-lg btn-shine"><i class="bi bi-heart-fill me-1"></i> Donate</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
