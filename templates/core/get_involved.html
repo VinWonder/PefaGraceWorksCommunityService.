@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Ways to help{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Ways to help" subtitle="Give, serve, partner or pray. There's a place for you in this work." %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3"><div class="tile"><i class="bi bi-heart"></i><h3>Give</h3><p>One-off or monthly gifts via M-Pesa or bank. Sponsor a learner or fund the clinic.</p><a href="{% url 'donations:donate' %}" class="btn btn-give btn-sm mt-3">Donate</a></div></div>
+      <div class="col-md-6 col-lg-3"><div class="tile"><i class="bi bi-person-raised-hand"></i><h3>Volunteer</h3><p>Health workers, teachers, mentors, artisans, accountants and fundraisers are all welcome.</p><a href="{% url 'community:volunteer' %}" class="btn btn-quiet btn-sm mt-3">Apply</a></div></div>
+      <div class="col-md-6 col-lg-3"><div class="tile"><i class="bi bi-building"></i><h3>Partner</h3><p>Churches, government, donors, companies and schools: let's multiply impact together.</p><a href="{% url 'community:partner' %}" class="btn btn-quiet btn-sm mt-3">Start a conversation</a></div></div>
+      <div class="col-md-6 col-lg-3"><div class="tile"><i class="bi bi-calendar-event"></i><h3>Join an event</h3><p>Medical camps, outreaches, mentorship days and fellowships.</p><a href="{% url 'events:list' %}" class="btn btn-quiet btn-sm mt-3">See events</a></div></div>
+    </div>
+  </div>
+</section>
+{% if faqs %}
+<section class="section bg-surface">
+  <div class="container" style="max-width:860px">
+    <h2 class="mb-4">Questions people ask</h2>
+    <div class="accordion" id="faq">
+      {% for f in faqs %}
+      <div class="accordion-item">
+        <h3 class="accordion-header"><button class="accordion-button {% if not forloop.first %}collapsed{% endif %}" type="button" data-bs-toggle="collapse" data-bs-target="#faq{{ f.pk }}" aria-expanded="{% if forloop.first %}true{% else %}false{% endif %}">{{ f.question }}</button></h3>
+        <div id="faq{{ f.pk }}" class="accordion-collapse collapse {% if forloop.first %}show{% endif %}" data-bs-parent="#faq"><div class="accordion-body">{{ f.answer|linebreaks }}</div></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

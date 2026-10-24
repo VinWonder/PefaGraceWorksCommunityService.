@@ -1,0 +1,68 @@
+{% extends "base.html" %}
+{% block title %}Leadership &amp; governance{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Leadership & governance" subtitle="Transparency, accountability, inclusivity and servant leadership, rooted in biblical values and the PEFA Church ethos." %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-6">
+        <h2>Three-tier structure</h2>
+        <p class="lead">The General Assembly, the Executive Board and the Management Team share clearly defined roles.</p>
+        <ul class="check-list mt-4">
+          <li><strong>General Assembly</strong>: the supreme decision-making body, made up of all registered members. It meets annually to review progress and approve strategic plans, budgets and major policies.</li>
+          <li><strong>Executive Board</strong>: seven volunteer members from professional and ministry backgrounds, including PEFA Church representatives, serving renewable three-year terms. Sub-committees cover Finance &amp; Audit, Programs, and Resource Mobilization.</li>
+          <li><strong>Management Team</strong>: led by the Program Coordinator, with thematic leads for each focus area, supported by administrative and field staff.</li>
+        </ul>
+      </div>
+      <div class="col-lg-6">
+        <h2 class="h4 mb-4">Organogram</h2>
+        <div class="orgchart" role="img" aria-label="Organisation chart: General Assembly, then Executive Board, then Management Team">
+          <div class="org-node">General Assembly</div>
+          <div class="org-link"></div>
+          <div class="org-node mid">Executive Board</div>
+          <div class="org-link"></div>
+          <div class="org-children">{% for p in board %}<span class="org-chip">{{ p.role }}</span>{% endfor %}</div>
+          <div class="org-link"></div>
+          <div class="org-node team">Management Team</div>
+          <div class="org-link"></div>
+          <div class="org-children">{% for p in management %}<span class="org-chip">{{ p.role }}</span>{% endfor %}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head"><h2>Executive Board</h2></div>
+    <div class="row g-4">
+      {% for p in board %}
+      <div class="col-sm-6 col-lg-3">
+        <div class="tile text-center">
+          {% if p.photo %}<img src="{{ p.photo.url }}" alt="{{ p.name }}" class="rounded-circle mb-3" width="110" height="110" style="object-fit:cover">{% else %}<div class="rounded-circle mx-auto mb-3 d-grid" style="width:110px;height:110px;place-items:center;background:var(--pg-mist)"><i class="bi bi-person" style="font-size:2.6rem"></i></div>{% endif %}
+          <h3 class="h6 mb-1">{{ p.name|default:"To be announced" }}</h3>
+          <div class="text-primary small fw-medium mb-2">{{ p.role }}</div>
+          <p class="small">{{ p.role_description }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="section-head mt-5"><h2>Management Team</h2></div>
+    <div class="row g-4">
+      {% for p in management %}
+      <div class="col-sm-6 col-lg-4"><div class="tile"><h3 class="mt-0">{{ p.role }}</h3><div class="small mb-2">{{ p.name|default:"" }}</div><p>{{ p.role_description }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5"><h2>Compliance and accountability</h2></div>
+      <div class="col-lg-7 prose">
+        <p>PGCS complies with national regulations for Community-Based Organizations under the Public Benefit Organizations Act, overseen by the Department of Social Development. We keep proper books of accounts, submit annual returns and undergo periodic audits.</p>
+        <p>We hold ourselves to a culture of ethical conduct, gender equity and environmental responsibility, so that every decision, resource and activity contributes faithfully to our mission.</p>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}

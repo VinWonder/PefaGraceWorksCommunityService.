@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Our story &amp; beliefs{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Our story & beliefs" subtitle=site.tagline %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8"><div class="prose">{{ site.about_long|linebreaks }}</div></div>
+      <aside class="col-lg-4">
+        <div class="tile">
+          <h3 class="mt-0">At a glance</h3>
+          <dl class="mb-0">
+            <dt class="text-muted-pg fw-normal small">Legal status</dt><dd>Community-Based Organization</dd>
+            {% if site.registration_number %}<dt class="text-muted-pg fw-normal small">Certificate No.</dt><dd>{{ site.registration_number }}</dd>{% endif %}
+            {% if site.registration_date %}<dt class="text-muted-pg fw-normal small">Registered</dt><dd>{{ site.registration_date|date:"j F Y" }}</dd>{% endif %}
+            <dt class="text-muted-pg fw-normal small">Affiliation</dt><dd>{{ site.affiliation }}</dd>
+            <dt class="text-muted-pg fw-normal small">Area served</dt><dd>Kolwa Central Ward, Kisumu East Sub-County, Kisumu County</dd>
+            <dt class="text-muted-pg fw-normal small">Faith orientation</dt><dd class="mb-0">Christian, serving all communities without discrimination</dd>
+          </dl>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+<section class="section bg-surface">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-6"><h2 class="mb-3">Vision</h2><p class="vision-quote">{{ site.vision }}</p></div>
+      <div class="col-lg-6"><h2 class="mb-3">Mission</h2><p class="vision-quote">{{ site.mission }}</p></div>
+    </div>
+  </div>
+</section>
+<section class="section">
+  <div class="container">
+    <div class="section-head"><h2>Our core values</h2><p>What guides every decision, relationship and shilling entrusted to us.</p></div>
+    <div class="row g-4">
+      {% for v in values %}
+      <div class="col-md-6 col-lg-4"><div class="tile"><i class="bi bi-{{ v.icon }}"></i><h3>{{ v.title }}</h3><p>{{ v.description }}</p></div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+<section class="section bg-mist">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5"><h2>Legal and institutional status</h2></div>
+      <div class="col-lg-7"><div class="prose">{{ site.legal_status|linebreaks }}</div>
+        <a class="btn btn-quiet" href="{% url 'core:governance' %}">How we're governed</a></div>
+    </div>
+  </div>
+</section>
+{% if milestones %}
+<section class="section">
+  <div class="container">
+    <div class="d-flex justify-content-between align-items-end mb-4"><h2 class="mb-0">What we've done so far</h2><a href="{% url 'core:impact' %}" class="btn btn-quiet">See all milestones</a></div>
+    <div class="row g-4">
+      {% for m in milestones %}<div class="col-md-6"><div class="tile"><i class="bi bi-{{ m.icon }}"></i><h3>{{ m.title }}</h3><p>{{ m.description }}</p></div></div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

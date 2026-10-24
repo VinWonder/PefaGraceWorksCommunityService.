@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Privacy{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Privacy notice" subtitle="How we handle your personal data, in line with Kenya's Data Protection Act, 2019." %}
+<section class="section"><div class="container"><div class="prose">
+  <h2>What we collect</h2>
+  <p>We collect only what we need: your name and contact details when you contact us, volunteer, donate, register for an event or give feedback; and household information when you ask for help, so that we can assess needs fairly.</p>
+  <h2>How we use it</h2>
+  <p>To respond to you, process and receipt donations, plan programs, report to partners in summary form (never with names unless you agree), and meet our legal obligations to the Department of Social Development.</p>
+  <h2>Who can see it</h2>
+  <p>Only authorised PGCS staff and volunteers who need it for their role. We do not sell or share your data. M-Pesa payments are processed by Safaricom.</p>
+  <h2>How long we keep it</h2>
+  <p>As long as needed for the purpose you gave it, and for financial records as long as the law requires.</p>
+  <h2>Your rights</h2>
+  <p>You may ask to see, correct or delete your information, or withdraw consent, by contacting us at {{ site.email|default:site.phone }}.</p>
+  <h2>Photos</h2>
+  <p>We publish photos of people only with their consent, and of children only with a parent or guardian's consent.</p>
+</div></div></section>
+{% endblock %}

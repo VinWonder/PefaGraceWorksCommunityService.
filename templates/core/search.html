@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}Search{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Search" %}
+<section class="section"><div class="container" style="max-width:860px">
+  <form method="get" class="d-flex gap-2 mb-5" role="search">
+    <label for="q" class="visually-hidden">Search</label>
+    <input id="q" name="q" value="{{ q }}" class="form-control form-control-lg" placeholder="Search programs, projects, stories, events" autofocus>
+    <button class="btn btn-primary">Search</button>
+  </form>
+  {% if q %}
+    <p class="text-muted-pg">{{ total }} result{{ total|pluralize }} for “{{ q }}”</p>
+    {% for label, items in results.items %}{% if items %}
+      <h2 class="h5 mt-4">{{ label }}</h2>
+      <ul class="list-unstyled">{% for o in items|slice:":10" %}<li class="py-2 border-bottom"><a href="{{ o.get_absolute_url }}">{{ o.title }}</a></li>{% endfor %}</ul>
+    {% endif %}{% endfor %}
+    {% if not total %}<p>Try a different word, or <a href="{% url 'community:contact' %}">ask us directly</a>.</p>{% endif %}
+  {% endif %}
+</div></section>
+{% endblock %}
