@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Service charter{% endblock %}
+{% block content %}
+{% static 'img/illustrative/kisumu-city.jpg' as charter_bg %}
+{% include "partials/_page_header.html" with title="Service charter" subtitle="Our public promise of transparency, accountability, compassion and professionalism." bg=charter_bg credit="Photo: Ckodero / Wikimedia Commons, CC BY-SA 4.0" %}
+
+{# ===== Principles ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-center mb-5">
+      <div class="col-lg-6" data-reveal>
+        <span class="eyebrow">Our promise to you</span>
+        <h2>Every family served with dignity, every shilling accounted for</h2>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <p class="lead mb-0">PEFA GraceWorks Community Services is dedicated to empowering communities through faith-inspired service, promoting holistic well-being, and creating opportunities for sustainable development.</p>
+      </div>
+    </div>
+    <div class="row g-4">
+      <div class="col-md-6 col-lg-3" data-reveal><div class="principle-card"><i class="bi bi-shield-check"></i><h3>Integrity</h3><p>Transparency and accountability in all engagements.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="1"><div class="principle-card"><i class="bi bi-universal-access"></i><h3>Equity</h3><p>Inclusion of women, youth and persons with disabilities.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="2"><div class="principle-card"><i class="bi bi-heart"></i><h3>Faith &amp; compassion</h3><p>Serving with grace, guided by Christian values.</p></div></div>
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="3"><div class="principle-card"><i class="bi bi-award"></i><h3>Excellence</h3><p>Services that meet the highest standards of professionalism.</p></div></div>
+    </div>
+  </div>
+</section>
+
+{# ===== One card per service area ===== #}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head" data-reveal>
+      <span class="eyebrow">What you can expect</span>
+      <h2>Our standards, area by area</h2>
+      <p>What we offer, what we commit to, and the standard you can hold us to.</p>
+    </div>
+    <div class="charter-list">
+      {% for s in standards %}
+      <article class="charter-card" data-reveal>
+        <a class="charter-card-img {% if not s.focus_area.image %}no-image{% endif %}" href="{{ s.focus_area.get_absolute_url }}">
+          {% if s.focus_area.image %}<img src="{{ s.focus_area.image.url }}" alt="" loading="lazy">{% endif %}
+          <span class="charter-card-title"><i class="bi bi-{{ s.focus_area.icon }}"></i> {{ s.focus_area.title }}</span>
+          {% if s.focus_area.image_credit %}<span class="photo-credit">{{ s.focus_area.image_credit }}</span>{% endif %}
+        </a>
+        <div class="charter-card-body">
+          <div class="charter-row"><span class="charter-label"><i class="bi bi-box-seam"></i> Services offered</span><p>{{ s.services_offered }}</p></div>
+          <div class="charter-row"><span class="charter-label"><i class="bi bi-heart"></i> Our commitment</span><p>{{ s.commitment }}</p></div>
+          <div class="charter-row highlight"><span class="charter-label"><i class="bi bi-stopwatch"></i> Service standard</span><p>{{ s.standard }}</p></div>
+        </div>
+      </article>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+{# ===== Feedback journey ===== #}
+<section class="section">
+  <div class="container">
+    <div class="section-head text-center mx-auto" data-reveal>
+      <span class="eyebrow">Feedback and complaints</span>
+      <h2>If we fall short, tell us</h2>
+      <p>Here is exactly what happens after you speak up.</p>
+    </div>
+    <ol class="journey">
+      <li data-reveal><span class="journey-dot"><i class="bi bi-chat-dots"></i></span><h3>You tell us</h3><p>Online, by phone on {{ site.phone|default:"our office line" }}, or in person at our office.</p></li>
+      <li data-reveal data-reveal-delay="1"><span class="journey-dot"><i class="bi bi-envelope-check"></i></span><h3>We acknowledge</h3><p>Within <strong>{{ site.feedback_ack_hours }} hours</strong>, with a reference number.</p></li>
+      <li data-reveal data-reveal-delay="2"><span class="journey-dot"><i class="bi bi-search"></i></span><h3>We look into it</h3><p>A named staff member reviews it fairly and confidentially.</p></li>
+      <li data-reveal data-reveal-delay="3"><span class="journey-dot"><i class="bi bi-check2-all"></i></span><h3>We resolve it</h3><p>Within <strong>{{ site.feedback_resolve_working_days }} working days</strong>, and we tell you what changed.</p></li>
+    </ol>
+    <div class="text-center mt-5" data-reveal>
+      <a href="{% url 'community:feedback' %}" class="btn btn-give btn-lg btn-shine me-2"><i class="bi bi-megaphone me-1"></i> Give feedback</a>
+      <a href="{% url 'community:feedback_track' %}" class="btn btn-quiet btn-lg">Track my feedback</a>
+      {% if site.physical_location %}<p class="small text-muted-pg mt-3 mb-0"><i class="bi bi-geo-alt me-1"></i>Or visit us at {{ site.physical_location }}.</p>{% endif %}
+    </div>
+  </div>
+</section>
+{% endblock %}
