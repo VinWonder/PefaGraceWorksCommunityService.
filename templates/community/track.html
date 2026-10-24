@@ -1,0 +1,30 @@
+{% extends "base.html" %}
+{% block title %}Track {% if kind == "help" %}my request{% else %}my feedback{% endif %}{% endblock %}
+{% block content %}
+{% if kind == "help" %}{% include "partials/_page_header.html" with title="Track my request" %}{% else %}{% include "partials/_page_header.html" with title="Track my feedback" %}{% endif %}
+<section class="section">
+  <div class="container" style="max-width:720px">
+    {% if item %}
+    <div class="form-panel mb-4">
+      <div class="d-flex justify-content-between flex-wrap gap-2 align-items-center">
+        <span class="ref-code" style="font-size:1.3rem">{{ item.reference }}</span>
+        <span class="badge-soft fs-6">{{ item.get_status_display }}</span>
+      </div>
+      <dl class="row mt-4 mb-0">
+        <dt class="col-sm-4 fw-normal text-muted-pg">Received</dt><dd class="col-sm-8">{{ item.created_at|date:"j F Y, g:i a" }}</dd>
+        {% if kind == "help" %}
+          <dt class="col-sm-4 fw-normal text-muted-pg">Need</dt><dd class="col-sm-8">{{ item.get_need_type_display }}</dd>
+          {% if item.public_update %}<dt class="col-sm-4 fw-normal text-muted-pg">Latest update</dt><dd class="col-sm-8">{{ item.public_update }}</dd>{% endif %}
+          {% if item.assisted_on %}<dt class="col-sm-4 fw-normal text-muted-pg">Assisted on</dt><dd class="col-sm-8">{{ item.assisted_on|date:"j F Y" }}</dd>{% endif %}
+        {% else %}
+          <dt class="col-sm-4 fw-normal text-muted-pg">Type</dt><dd class="col-sm-8">{{ item.get_kind_display }}</dd>
+          <dt class="col-sm-4 fw-normal text-muted-pg">Resolve by</dt><dd class="col-sm-8">{{ item.resolve_by|date:"j F Y" }}</dd>
+          {% if item.response %}<dt class="col-sm-4 fw-normal text-muted-pg">Our response</dt><dd class="col-sm-8">{{ item.response|linebreaksbr }}</dd>{% endif %}
+        {% endif %}
+      </dl>
+    </div>
+    {% endif %}
+    <form method="post" class="form-panel" novalidate>{% csrf_token %}{% include "partials/_form.html" %}<button class="btn btn-primary">Check status</button></form>
+  </div>
+</section>
+{% endblock %}

@@ -1,0 +1,20 @@
+{% extends "base.html" %}
+{% block title %}{{ title }}{% endblock %}
+{% block content %}
+<section class="section">
+  <div class="container" style="max-width:640px">
+    <div class="form-panel text-center">
+      <i class="bi bi-check-circle-fill text-success" style="font-size:3.5rem"></i>
+      <h1 class="h2 mt-3">{{ title }}</h1>
+      <p class="lead">{{ body }}</p>
+      {% if reference %}
+      <p class="mb-2">Your reference number</p>
+      <div class="ref-code mb-3">{{ reference }}</div>
+      <p class="small text-muted-pg">Write it down or take a screenshot. You'll need it with your phone number to check progress.</p>
+      {% if track_url %}<a href="{{ track_url }}" class="btn btn-quiet me-2">Track progress</a>{% endif %}
+      {% endif %}
+      <a href="{% url 'core:home' %}" class="btn btn-primary">Back to the home page</a>
+    </div>
+  </div>
+</section>
+{% endblock %}

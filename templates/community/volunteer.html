@@ -1,0 +1,19 @@
+{% extends "base.html" %}
+{% block title %}Volunteer{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Volunteer your skills" subtitle="Serve alongside us in outreach, health, water, education and enterprise." %}
+<section class="section"><div class="container"><div class="row g-5">
+  <div class="col-lg-7"><form method="post" class="form-panel" novalidate>{% csrf_token %}{% include "partials/_form.html" %}<button class="btn btn-primary btn-lg mt-2">Send application</button></form></div>
+  <aside class="col-lg-5">
+    <h2 class="h4">Who we're looking for</h2>
+    <ul class="check-list mt-3">
+      <li>Health workers and community health volunteers for medical camps.</li>
+      <li>Teachers and mentors for learners and adolescent girls.</li>
+      <li>Artisans for tailoring, carpentry, mechanics, hairdressing and ICT training.</li>
+      <li>People experienced in non-profit operations, finance, strategy and fundraising.</li>
+      <li>Prayer partners and outreach team members.</li>
+    </ul>
+    <p class="text-muted-pg">We'll call you within a week to talk about where you fit best.</p>
+  </aside>
+</div></div></section>
+{% endblock %}

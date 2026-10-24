@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Contact us{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Contact us" subtitle="We'd love to hear from you." %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7">
+        <form method="post" class="form-panel" novalidate>{% csrf_token %}{% include "partials/_form.html" %}<button class="btn btn-primary btn-lg mt-2">Send message</button></form>
+      </div>
+      <aside class="col-lg-5">
+        <div class="give-aside mb-4">
+          <h2 class="h4">Visit or call</h2>
+          <dl class="mb-0">
+            <dt>Office</dt><dd>{{ site.physical_location }}</dd>
+            <dt>Area</dt><dd>{{ site.address }}</dd>
+            {% if site.phone %}<dt>Phone</dt><dd><a class="text-white" href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></dd>{% endif %}
+            {% if site.email %}<dt>Email</dt><dd><a class="text-white" href="mailto:{{ site.email }}">{{ site.email }}</a></dd>{% endif %}
+            {% if site.office_hours %}<dt>Hours</dt><dd class="mb-0">{{ site.office_hours }}</dd>{% endif %}
+          </dl>
+        </div>
+        {% if site.map_embed_url %}<iframe class="map-embed" src="{{ site.map_embed_url }}" loading="lazy" referrerpolicy="no-referrer-when-downgrade" title="Map to our office"></iframe>{% endif %}
+        <p class="small text-muted-pg mt-3">Have a complaint or suggestion? Use our <a href="{% url 'community:feedback' %}">feedback form</a> so it's tracked under our service charter.</p>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

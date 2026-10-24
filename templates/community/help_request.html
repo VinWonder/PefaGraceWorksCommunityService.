@@ -1,0 +1,56 @@
+{% extends "base.html" %}
+{% block title %}Request help{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Request help" subtitle="Tell us what your household needs. Your information stays private within PEFA GraceWorks." %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-8">
+        <form method="post" class="form-panel" novalidate>
+          {% csrf_token %}
+          {% if form.non_field_errors %}<div class="alert alert-danger">{% for e in form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>{% endif %}
+          <div class="hp-field" aria-hidden="true">{{ form.website_url }}</div>
+          <h2 class="h5 mt-0 mb-3">About you</h2>
+          <div class="row">
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.full_name %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.phone %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.location %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.ward %}</div>
+          </div>
+          <h2 class="h5 mt-3 mb-3">What you need</h2>
+          <div class="row">
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.need_type %}</div>
+            <div class="col-md-6">{% include "partials/_field.html" with field=form.urgency %}</div>
+          </div>
+          {% include "partials/_field.html" with field=form.description %}
+          <h2 class="h5 mt-3 mb-3">Your household</h2>
+          <div class="row">
+            <div class="col-md-4">{% include "partials/_field.html" with field=form.household_size %}</div>
+            <div class="col-md-4">{% include "partials/_field.html" with field=form.children_under_18 %}</div>
+            <div class="col-md-4">{% include "partials/_field.html" with field=form.monthly_income %}</div>
+          </div>
+          {% include "partials/_field.html" with field=form.is_single_parent %}
+          {% include "partials/_field.html" with field=form.has_disability %}
+          {% include "partials/_field.html" with field=form.is_elderly_headed %}
+          {% include "partials/_field.html" with field=form.is_child_headed %}
+          {% include "partials/_field.html" with field=form.referred_by %}
+          <hr>
+          {% include "partials/_field.html" with field=form.consent %}
+          <button type="submit" class="btn btn-primary btn-lg">Send my request</button>
+        </form>
+      </div>
+      <aside class="col-lg-4">
+        <div class="tile mb-4">
+          <h2 class="h5 mt-0">How we decide</h2>
+          <p class="small">Each request gets a score from 0 to 100 based on income, household size, children, disability, the age of the household head and how urgent the need is. Our team reviews the highest scores first. Households helped in the last six months move a little down the list, so help reaches as many families as possible.</p>
+        </div>
+        <div class="tile">
+          <h2 class="h5 mt-0">Already applied?</h2>
+          <p class="small">Use your reference number to see where your request is.</p>
+          <a href="{% url 'community:help_track' %}" class="btn btn-quiet btn-sm">Track my request</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

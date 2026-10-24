@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+{% block title %}Feedback &amp; complaints{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Feedback & complaints" subtitle="We value your feedback. Every message gets a reference number you can track." %}
+<section class="section"><div class="container"><div class="row g-5">
+  <div class="col-lg-7"><form method="post" class="form-panel" novalidate>{% csrf_token %}{% include "partials/_form.html" %}<button class="btn btn-primary btn-lg mt-2">Send feedback</button></form></div>
+  <aside class="col-lg-5">
+    <div class="give-aside">
+      <h2 class="h4">Our promise</h2>
+      <p>Acknowledged within <strong class="text-white">{{ site.feedback_ack_hours }} hours</strong>.<br>Addressed within <strong class="text-white">{{ site.feedback_resolve_working_days }} working days</strong>.</p>
+      <a href="{% url 'community:feedback_track' %}" class="btn btn-give btn-sm">Track existing feedback</a>
+    </div>
+    <p class="small text-muted-pg mt-3">You can also call {{ site.phone }} or visit us at {{ site.physical_location }}.</p>
+  </aside>
+</div></div></section>
+{% endblock %}

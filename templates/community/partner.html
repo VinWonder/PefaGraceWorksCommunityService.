@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Partner with us{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Partner with us" subtitle="Faith-based, government, development and private-sector partners multiply what we can do." %}
+<section class="section"><div class="container"><div class="row g-5">
+  <div class="col-lg-7"><form method="post" class="form-panel" novalidate>{% csrf_token %}{% include "partials/_form.html" %}<button class="btn btn-primary btn-lg mt-2">Send inquiry</button></form></div>
+  <aside class="col-lg-5">
+    <h2 class="h4">Our commitment to partners</h2>
+    <ul class="check-list mt-3">
+      <li>Transparent reporting with clear indicators.</li>
+      <li>Participatory project management with the community.</li>
+      <li>Accountability to every funding partner.</li>
+    </ul>
+    <a href="{% url 'core:partners' %}" class="btn btn-quiet mt-2">See current partners</a>
+  </aside>
+</div></div></section>
+{% endblock %}
