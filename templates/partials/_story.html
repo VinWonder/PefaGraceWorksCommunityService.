@@ -1,0 +1,14 @@
+{% load static %}
+<a class="story-card" href="{{ post.get_absolute_url }}">
+  <div class="story-card-img {% if not post.cover_url %}brand-fill{% endif %}">
+    {% if post.cover_url %}<img src="{{ post.cover_url }}" alt="" loading="lazy">
+    {% else %}<img class="brand-mark" src="{% static 'img/logo-mark-white.png' %}" alt="">{% endif %}
+    {% if post.category %}<span class="story-chip">{{ post.category }}</span>{% endif %}
+  </div>
+  <div class="story-card-body">
+    <div class="story-meta"><span><i class="bi bi-calendar3"></i> {{ post.published_at|date:"j M Y" }}</span><span><i class="bi bi-clock"></i> {{ post.reading_minutes }} min read</span></div>
+    <h3>{{ post.title }}</h3>
+    <p>{{ post.summary|truncatechars:150 }}</p>
+    <span class="focus-card-go mt-auto">Read the story <i class="bi bi-arrow-right"></i></span>
+  </div>
+</a>

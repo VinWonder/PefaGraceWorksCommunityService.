@@ -1,0 +1,8 @@
+<div class="event-row">
+  <div class="event-date"><div class="d">{{ event.start|date:"j" }}</div><div class="m">{{ event.start|date:"M Y" }}</div></div>
+  <div>
+    <h3><a href="{{ event.get_absolute_url }}">{{ event.title }}</a></h3>
+    <div class="meta"><i class="bi bi-clock me-1"></i>{{ event.start|date:"D, g:i a" }} &nbsp; <i class="bi bi-geo-alt me-1"></i>{{ event.venue }}</div>
+  </div>
+  <a href="{{ event.get_absolute_url }}" class="btn btn-quiet btn-sm">{% if event.can_register %}Register{% else %}Details{% endif %}</a>
+</div>
