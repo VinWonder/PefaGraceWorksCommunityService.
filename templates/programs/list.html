@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block title %}Focus areas{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Our focus areas" subtitle="Five interrelated pillars for holistic transformation: spiritual, physical, educational, social and economic." %}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      {% for area in focus_areas %}
+      <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <a class="focus-card {% if not area.image %}no-image{% endif %}" href="{{ area.get_absolute_url }}">
+          {% if area.image %}<img src="{{ area.image.url }}" alt="" loading="lazy">{% endif %}
+          {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
+          <span class="focus-card-icon"><i class="bi bi-{{ area.icon }}"></i></span>
+          <span class="focus-card-body">
+            <span class="focus-card-num">0{{ forloop.counter }}</span>
+            <h2 class="h3">{{ area.title }}</h2>
+            <p>{{ area.summary }}</p>
+            <span class="focus-card-go">Explore <i class="bi bi-arrow-right"></i></span>
+          </span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

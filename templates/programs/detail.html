@@ -1,0 +1,172 @@
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}{{ area.title }}{% endblock %}
+{% block meta_description %}{{ area.summary }}{% endblock %}
+{% block og_image %}{% if area.image %}{{ request.scheme }}://{{ request.get_host }}{{ area.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block content %}
+{% url 'programs:list' as list_url %}
+{% if area.image %}{% include "partials/_page_header.html" with title=area.title subtitle=area.summary parent_label="Focus areas" parent_url=list_url bg=area.image.url credit=area.image_credit %}
+{% else %}{% include "partials/_page_header.html" with title=area.title subtitle=area.summary parent_label="Focus areas" parent_url=list_url %}{% endif %}
+
+{# ===== Intro: story + sticky support panel ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7" data-reveal>
+        {% if area.image %}
+        <div class="feature-img tilt mb-4">
+          <img src="{{ area.image.url }}" alt="">
+          <span class="feature-tag"><i class="bi bi-{{ area.icon }}"></i> {{ area.title }}</span>
+          {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
+        </div>
+        {% endif %}
+        <div class="prose">{{ area.description|safe }}</div>
+      </div>
+      <aside class="col-lg-5">
+        <div class="sticky-aside">
+          {% if area.goal %}
+          <div class="goal-card" data-reveal>
+            <span class="goal-icon"><i class="bi bi-bullseye"></i></span>
+            <span class="eyebrow">Our goal</span>
+            <p>{{ area.goal }}</p>
+          </div>
+          {% endif %}
+          <div class="cta-band support-card" data-reveal data-reveal-delay="1">
+            <span class="support-icon"><i class="bi bi-{{ area.icon }}"></i></span>
+            <h2 class="h4">Support {{ area.title|lower }}</h2>
+            <p class="small">Give to this focus area, or volunteer your skills with our team.</p>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="{% url 'donations:donate' %}" class="btn btn-give btn-shine"><i class="bi bi-heart-fill me-1"></i> Donate</a>
+              <a href="{% url 'community:volunteer' %}" class="btn btn-glass">Volunteer</a>
+            </div>
+          </div>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+
+{# ===== Activities ===== #}
+{% if area.activities %}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">What we do</span><h2>Key activities</h2></div>
+    <div class="row g-4">
+      {% for i in area.activities %}
+      <div class="col-md-6 col-lg-3" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <div class="step-card">
+          <span class="step-num">{{ forloop.counter|stringformat:"02d" }}</span>
+          <p>{{ i.text }}</p>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Outcomes ===== #}
+{% if area.outcomes %}
+<section class="section outcomes-band">
+  {% if area.image %}<div class="impact-bg" style="background-image:url('{{ area.image.url }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative">
+    <div class="section-head" data-reveal><span class="eyebrow eyebrow-light">What changes</span><h2>Expected outcomes</h2></div>
+    <div class="row g-4">
+      {% for i in area.outcomes %}
+      <div class="col-md-4" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <div class="outcome-card"><i class="bi bi-check2-circle"></i><p>{{ i.text }}</p></div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Service standard ===== #}
+{% if area.charter %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Our promise</span><h2>Our service standard</h2><p>Part of our public <a href="{% url 'core:charter' %}">service charter</a>. Hold us to it.</p></div>
+    <div class="row g-4">
+      <div class="col-md-4" data-reveal><div class="promise-card"><span class="promise-icon"><i class="bi bi-box-seam"></i></span><h3>Services</h3><p>{{ area.charter.services_offered }}</p></div></div>
+      <div class="col-md-4" data-reveal data-reveal-delay="1"><div class="promise-card"><span class="promise-icon"><i class="bi bi-heart"></i></span><h3>Commitment</h3><p>{{ area.charter.commitment }}</p></div></div>
+      <div class="col-md-4" data-reveal data-reveal-delay="2"><div class="promise-card"><span class="promise-icon"><i class="bi bi-stopwatch"></i></span><h3>Standard</h3><p>{{ area.charter.standard }}</p></div></div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== From the field ===== #}
+{% if field_photos or field_videos %}
+<section class="section bg-surface overflow-hidden">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div><span class="eyebrow">From the field</span><h2 class="mb-0">{{ area.title }} in action</h2></div>
+      <a href="{% url 'news:gallery' %}" class="btn btn-quiet">Full gallery</a>
+    </div>
+    {% if field_photos %}
+    <div class="swiper strip-swiper">
+      <div class="swiper-wrapper">
+        {% for p in field_photos %}<div class="swiper-slide"><a href="{{ p.image.url }}" class="moment glightbox" data-gallery="field" data-title="{{ p.caption }}"><img src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy"><span class="moment-caption">{{ p.caption }}</span></a></div>{% endfor %}
+      </div>
+    </div>
+    {% endif %}
+    {% if field_videos %}
+    <div class="reels-grid mt-4">{% for v in field_videos %}<div>{% include "partials/_reel.html" with reel_group="field-reels" %}</div>{% endfor %}</div>
+    {% endif %}
+  </div>
+</section>
+{% endif %}
+
+{# ===== Indicators ===== #}
+{% if indicators %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Accountability</span><h2>How we measure progress</h2></div>
+    <div class="row g-4">
+      {% for i in indicators %}
+      <div class="col-md-6" data-reveal><div class="tile"><h3 class="mt-0">{{ i.name }}</h3>
+        <div class="progress mt-3" role="progressbar" aria-label="{{ i.name }}" aria-valuenow="{{ i.progress_percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" data-progress="{{ i.progress_percent }}" style="width: {{ i.progress_percent }}%"></div></div>
+        <div class="funding-figures"><span><strong>{{ i.current_value|floatformat:0|intcomma }}</strong> {{ i.unit }}</span><span>Target {{ i.target|floatformat:0|intcomma }} by {{ i.target_year }}</span></div>
+      </div></div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{% if projects %}
+<section class="section {% if indicators %}bg-surface{% endif %}">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Projects</span><h2>What we're building</h2></div>
+    <div class="row g-4">{% for project in projects %}<div class="col-md-6 col-lg-4" data-reveal>{% include "programs/_project_card.html" %}</div>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{% if posts %}
+<section class="section">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Stories</span><h2>From this focus area</h2></div>
+    <div class="row g-4">{% for post in posts %}<div class="col-md-4">{% include "partials/_story.html" %}</div>{% endfor %}</div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Other focus areas ===== #}
+<section class="section bg-mist">
+  <div class="container">
+    <div class="section-head" data-reveal><span class="eyebrow">Keep exploring</span><h2>Other focus areas</h2></div>
+    <div class="row g-3">
+      {% for o in others %}
+      <div class="col-6 col-lg-3" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <a class="mini-area {% if not o.image %}no-image{% endif %}" href="{{ o.get_absolute_url }}">
+          {% if o.image %}<img src="{{ o.image.url }}" alt="" loading="lazy">{% endif %}
+          <span><i class="bi bi-{{ o.icon }}"></i> {{ o.title }}</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}
