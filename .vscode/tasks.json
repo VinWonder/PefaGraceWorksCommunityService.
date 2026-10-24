@@ -1,0 +1,9 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    { "label": "Run server", "type": "shell", "command": "python manage.py runserver", "problemMatcher": [] },
+    { "label": "Make + apply migrations", "type": "shell", "command": "python manage.py makemigrations && python manage.py migrate", "problemMatcher": [] },
+    { "label": "Load PGCS content", "type": "shell", "command": "python manage.py seed_pgcs --demo", "problemMatcher": [] },
+    { "label": "Run tests", "type": "shell", "command": "python manage.py test apps", "group": "test", "problemMatcher": [] }
+  ]
+}
