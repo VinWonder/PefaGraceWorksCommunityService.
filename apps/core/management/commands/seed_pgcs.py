@@ -179,9 +179,14 @@ class Command(BaseCommand):
 
     def add_arguments(self, parser):
         parser.add_argument("--demo", action="store_true", help="Also create sample events and a blog post")
+        parser.add_argument("--if-empty", action="store_true",
+                            help="Only seed a fresh database, so deploys never overwrite content edited in the admin")
 
     @transaction.atomic
     def handle(self, *args, **opts):
+        if opts["if_empty"] and FocusArea.objects.exists():
+            self.stdout.write("Content already loaded; skipping seed.")
+            return
         s = SiteSettings.load()
         s.org_name = "PEFA GraceWorks Community Services"
         s.short_name = "PGCS"
