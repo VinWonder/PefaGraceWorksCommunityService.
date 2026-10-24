@@ -22,6 +22,12 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
+# Render gives every web service a public hostname, e.g. pefa-graceworks.onrender.com
+RENDER_EXTERNAL_HOSTNAME = env("RENDER_EXTERNAL_HOSTNAME", default="")
+if RENDER_EXTERNAL_HOSTNAME:
+    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
+    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+
 if DEBUG:
     # Let phones and other laptops on the same Wi-Fi open the development server
     # (python manage.py runserver 0.0.0.0:8001 → http://<this laptop's IP>:8001). Never applies in production.
@@ -118,8 +124,13 @@ STATICFILES_DIRS = [BASE_DIR / "static"]
 MEDIA_URL = "/media/"
 MEDIA_ROOT = BASE_DIR / "media"
 
+# Uploaded photos and videos go to Cloudinary when CLOUDINARY_URL is set (needed on hosts whose disk is
+# wiped on each deploy, like Render's free plan); otherwise to MEDIA_ROOT. See apps/core/storage.py.
+CLOUDINARY_ENABLED = bool(env("CLOUDINARY_URL", default=""))
+
 STORAGES = {
-    "default": {"BACKEND": "django.core.files.storage.FileSystemStorage"},
+    "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage" if CLOUDINARY_ENABLED
+                else "django.core.files.storage.FileSystemStorage"},
     "staticfiles": {
         "BACKEND": "whitenoise.storage.CompressedManifestStaticFilesStorage"
         if not DEBUG
