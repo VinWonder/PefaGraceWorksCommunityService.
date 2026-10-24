@@ -1,0 +1,98 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Dashboard{% endblock %}
+{% block content %}
+<section class="section-tight bg-surface">
+  <div class="container-xxl">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4">
+      <div>
+        <h1 class="h2 mb-1">Data dashboard</h1>
+        <p class="text-muted-pg mb-0">Signed in as {{ request.user.get_full_name|default:request.user.username }} &nbsp;|&nbsp; <a href="{% url 'admin:index' %}">Open the admin</a></p>
+      </div>
+      <form method="get" class="d-flex flex-wrap gap-2 align-items-end">
+        <div><label class="form-label small mb-1" for="from">From</label><input id="from" type="date" name="from" value="{{ date_from|date:'Y-m-d' }}" class="form-control form-control-sm"></div>
+        <div><label class="form-label small mb-1" for="to">To</label><input id="to" type="date" name="to" value="{{ date_to|date:'Y-m-d' }}" class="form-control form-control-sm"></div>
+        <button class="btn btn-primary btn-sm">Apply</button>
+      </form>
+    </div>
+
+    {% with k=stats.kpis %}
+    <div class="row g-3 mb-4">
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">KES {{ k.donations_total|floatformat:0|intcomma }}</div><div class="l">Donations received ({{ k.donations_count }})</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.beneficiaries_active|intcomma }}</div><div class="l">Active beneficiaries</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.learners_active|intcomma }}</div><div class="l">Learners supported ({{ k.girls_supported }} girls)</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi {% if k.help_high_priority_open %}alert-kpi{% endif %}"><div class="v">{{ k.help_open }}</div><div class="l">Open help requests ({{ k.help_high_priority_open }} high priority)</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi {% if k.feedback_overdue %}alert-kpi{% endif %}"><div class="v">{{ k.feedback_open }}</div><div class="l">Open feedback ({{ k.feedback_overdue }} overdue)</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{% if k.charter_compliance is not None %}{{ k.charter_compliance }}%{% else %}—{% endif %}</div><div class="l">Service charter met</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">KES {{ k.support_value|floatformat:0|intcomma }}</div><div class="l">Support given in period</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.help_requests }}</div><div class="l">Help requests in period</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.volunteers_approved }}</div><div class="l">Approved volunteers ({{ k.volunteers_new }} new)</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.events_held }}</div><div class="l">Events held</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi"><div class="v">{{ k.event_attendance|intcomma }}</div><div class="l">Recorded attendance</div></div></div>
+      <div class="col-6 col-md-4 col-xl-2"><div class="kpi {% if k.pending_mpesa %}alert-kpi{% endif %}"><div class="v">{{ k.pending_mpesa }}</div><div class="l">M-Pesa payments pending</div></div></div>
+    </div>
+    {% endwith %}
+
+    <div class="row g-3 mb-3">
+      <div class="col-lg-8"><div class="chart-box"><h3>Donations by month (KES)</h3><canvas id="c-donations" height="110"></canvas></div></div>
+      <div class="col-lg-4"><div class="chart-box"><h3>By payment method</h3><canvas id="c-method"></canvas></div></div>
+    </div>
+    <div class="row g-3 mb-3">
+      <div class="col-lg-4"><div class="chart-box"><h3>Help requests by status</h3><canvas id="c-hr-status"></canvas></div></div>
+      <div class="col-lg-4"><div class="chart-box"><h3>Help requests by need</h3><canvas id="c-hr-need"></canvas></div></div>
+      <div class="col-lg-4"><div class="chart-box"><h3>Beneficiaries by focus area</h3><canvas id="c-ben-area"></canvas></div></div>
+    </div>
+    <div class="row g-3 mb-4">
+      <div class="col-lg-4"><div class="chart-box"><h3>Beneficiaries by gender</h3><canvas id="c-ben-gender"></canvas></div></div>
+      <div class="col-lg-4"><div class="chart-box"><h3>Learners by level</h3><canvas id="c-ben-level"></canvas></div></div>
+      <div class="col-lg-4"><div class="chart-box"><h3>Indicators (2028 targets)</h3>
+        {% for i in stats.indicators %}<div class="mb-3"><div class="d-flex justify-content-between small"><span>{{ i.name }}</span><span>{{ i.progress }}%</span></div><div class="progress" role="progressbar" aria-label="{{ i.name }}" aria-valuenow="{{ i.progress }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ i.progress }}%"></div></div></div>{% empty %}<p class="small text-muted-pg">Add indicators in the admin.</p>{% endfor %}
+      </div></div>
+    </div>
+
+    <div class="row g-3 mb-4">
+      <div class="col-lg-6"><div class="chart-box"><h3>Highest-priority open help requests</h3>
+        <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Ref</th><th>Name</th><th>Need</th><th class="text-end">Score</th></tr></thead><tbody>
+        {% for r in urgent_requests %}<tr><td><a href="{% url 'admin:community_helprequest_change' r.pk %}">{{ r.reference }}</a></td><td>{{ r.full_name }}</td><td>{{ r.get_need_type_display }}</td><td class="text-end fw-semibold">{{ r.priority_score }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted-pg">No open requests.</td></tr>{% endfor %}
+        </tbody></table></div></div></div>
+      <div class="col-lg-6"><div class="chart-box"><h3>Overdue feedback (service charter)</h3>
+        <div class="table-responsive"><table class="table table-sm mb-0"><thead><tr><th>Ref</th><th>Type</th><th>Received</th><th>Due</th></tr></thead><tbody>
+        {% for f in overdue_feedback %}<tr><td><a href="{% url 'admin:community_feedback_change' f.pk %}">{{ f.reference }}</a></td><td>{{ f.get_kind_display }}</td><td>{{ f.created_at|date:"j M" }}</td><td class="text-danger">{{ f.resolve_by|date:"j M" }}</td></tr>{% empty %}<tr><td colspan="4" class="text-muted-pg">Nothing overdue.</td></tr>{% endfor %}
+        </tbody></table></div></div></div>
+    </div>
+
+    <div class="chart-box mb-4"><h3>Download data (CSV, opens in Excel)</h3>
+      <div class="d-flex flex-wrap gap-2">{% for e in exports %}<a class="btn btn-quiet btn-sm" href="{% url 'dashboard:export' e %}"><i class="bi bi-download me-1"></i>{{ e|title }}</a>{% endfor %}</div>
+    </div>
+  </div>
+</section>
+{{ stats|json_script:"dash-data" }}
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.4/dist/chart.umd.min.js"></script>
+<script>
+(function () {
+  const d = JSON.parse(document.getElementById("dash-data").textContent);
+  const palette = ["#0b6999", "#e9a23b", "#3f8a74", "#083b6c", "#6aa9cf", "#b9761a", "#8d5fa8", "#c2410c"];
+  const dark = document.documentElement.getAttribute("data-bs-theme") === "dark";
+  Chart.defaults.color = dark ? "#a7b8c8" : "#51647a";
+  Chart.defaults.font.family = "Lexend, system-ui, sans-serif";
+  const make = (id, type, series, opts) => {
+    const el = document.getElementById(id);
+    if (!el || !series.labels.length) { if (el) el.replaceWith(Object.assign(document.createElement("p"), { className: "small text-muted-pg", textContent: "No data yet for this period." })); return; }
+    new Chart(el, {
+      type,
+      data: { labels: series.labels, datasets: [{ data: series.values, backgroundColor: type === "line" ? "rgba(11,105,153,.12)" : palette, borderColor: type === "line" ? "#0b6999" : palette, fill: type === "line", tension: .3 }] },
+      options: Object.assign({ plugins: { legend: { display: type === "doughnut", position: "bottom" } } }, opts || {}),
+    });
+  };
+  make("c-donations", "line", d.donations_monthly, { scales: { y: { beginAtZero: true } } });
+  make("c-method", "doughnut", d.donations_by_method);
+  make("c-hr-status", "bar", d.help_by_status, { indexAxis: "y" });
+  make("c-hr-need", "doughnut", d.help_by_need);
+  make("c-ben-area", "bar", d.beneficiaries_by_area, { indexAxis: "y" });
+  make("c-ben-gender", "doughnut", d.beneficiaries_by_gender);
+  make("c-ben-level", "bar", d.beneficiaries_by_level);
+})();
+</script>
+{% endblock %}
