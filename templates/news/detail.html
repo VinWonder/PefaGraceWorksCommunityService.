@@ -1,0 +1,59 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{{ post.title }}{% endblock %}
+{% block meta_description %}{{ post.summary }}{% endblock %}
+{% block og_title %}{{ post.title }}{% endblock %}
+{% block og_description %}{{ post.summary }}{% endblock %}
+{% block og_image %}{% if post.cover_url %}{{ request.scheme }}://{{ request.get_host }}{{ post.cover_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block content %}
+<article>
+  {% url 'news:list' as blog_url %}
+  {% include "partials/_page_header.html" with title=post.title subtitle=post.excerpt parent_label="Stories" parent_url=blog_url bg=post.cover_url %}
+  <div class="section pt-4">
+    <div class="container">
+      <div class="row g-5 justify-content-center">
+        <aside class="col-lg-1 d-none d-lg-block">
+          <div class="share-rail" aria-label="Share this story">
+            <a target="_blank" rel="noopener" href="https://wa.me/?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}" aria-label="Share on WhatsApp"><i class="bi bi-whatsapp"></i></a>
+            <a target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}" aria-label="Share on Facebook"><i class="bi bi-facebook"></i></a>
+            <a target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ post.title|urlencode }}" aria-label="Share on X"><i class="bi bi-twitter-x"></i></a>
+            <button type="button" data-copy="{{ request.build_absolute_uri }}" class="copy-btn" aria-label="Copy link"><i class="bi bi-copy"></i></button>
+          </div>
+        </aside>
+        <div class="col-lg-8">
+          <div class="story-byline">
+            <span class="avatar">{% if post.author %}{{ post.author.get_full_name|default:post.author.username|first|upper }}{% else %}P{% endif %}</span>
+            <div>
+              <strong>{% if post.author %}{{ post.author.get_full_name|default:post.author.username }}{% else %}PEFA GraceWorks team{% endif %}</strong>
+              <div class="story-meta"><span>{{ post.published_at|date:"j F Y" }}</span><span>{{ post.reading_minutes }} min read</span>{% if post.category %}<a href="{% url 'news:category' post.category.slug %}">{{ post.category }}</a>{% endif %}</div>
+            </div>
+          </div>
+          {% if post.cover_url %}<div class="feature-img my-4"><img src="{{ post.cover_url }}" alt=""></div>{% endif %}
+          <div class="prose story-prose">{{ post.body|safe }}</div>
+          <div class="story-end">
+            <div>
+              <h2 class="h4 mb-1">Moved by this story?</h2>
+              <p class="mb-0 text-muted-pg">Help write the next one.</p>
+            </div>
+            <div class="d-flex flex-wrap gap-2">
+              <a href="{% url 'donations:donate' %}" class="btn btn-give btn-shine"><i class="bi bi-heart-fill me-1"></i> Donate</a>
+              <a href="{% url 'community:volunteer' %}" class="btn btn-quiet">Volunteer</a>
+            </div>
+          </div>
+          <div class="d-flex d-lg-none flex-wrap gap-2 mt-4">
+            <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://wa.me/?text={{ post.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+            <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"><i class="bi bi-facebook"></i> Facebook</a>
+            <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://twitter.com/intent/tweet?url={{ request.build_absolute_uri|urlencode }}&text={{ post.title|urlencode }}"><i class="bi bi-twitter-x"></i> X</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</article>
+{% if related %}
+<section class="section bg-surface"><div class="container">
+  <div class="mb-4"><span class="eyebrow">Keep reading</span><h2 class="mb-0">More stories</h2></div>
+  <div class="row g-4">{% for post in related %}<div class="col-md-4" data-reveal>{% include "partials/_story.html" %}</div>{% endfor %}</div>
+</div></section>
+{% endif %}
+{% endblock %}

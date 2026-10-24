@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}{% if category %}{{ category.name }}{% else %}Stories &amp; news{% endif %}{% endblock %}
+{% block content %}
+{% if category %}{% url 'news:list' as blog_url %}{% include "partials/_page_header.html" with title=category.name parent_label="Stories" parent_url=blog_url %}
+{% else %}{% include "partials/_page_header.html" with title="Stories & news" subtitle="Lives changed, lessons learned and what's next, from the field in Kisumu East." %}{% endif %}
+<section class="section pt-4">
+  <div class="container">
+    {% if categories %}
+    <div class="filter-bar" role="navigation" aria-label="Categories">
+      <a href="{% url 'news:list' %}" class="filter-chip {% if not category %}active{% endif %}">All stories</a>
+      {% for c in categories %}<a href="{% url 'news:category' c.slug %}" class="filter-chip {% if category == c %}active{% endif %}">{{ c.name }}</a>{% endfor %}
+    </div>
+    {% endif %}
+
+    {% with lead=page_obj.object_list.0 %}
+    {% if lead and page_obj.number == 1 %}
+    <a class="story-lead" href="{{ lead.get_absolute_url }}" data-reveal>
+      <div class="story-lead-img {% if not lead.cover_url %}brand-fill{% endif %}">
+        {% if lead.cover_url %}<img src="{{ lead.cover_url }}" alt="">{% else %}<img class="brand-mark" src="{% static 'img/logo-mark-white.png' %}" alt="">{% endif %}
+      </div>
+      <div class="story-lead-body">
+        <span class="eyebrow">Latest story{% if lead.category %} · {{ lead.category }}{% endif %}</span>
+        <h2>{{ lead.title }}</h2>
+        <p class="lead">{{ lead.summary|truncatechars:220 }}</p>
+        <div class="story-meta"><span><i class="bi bi-calendar3"></i> {{ lead.published_at|date:"j F Y" }}</span><span><i class="bi bi-clock"></i> {{ lead.reading_minutes }} min read</span></div>
+        <span class="btn btn-primary mt-3 align-self-start">Read the story <i class="bi bi-arrow-right ms-1"></i></span>
+      </div>
+    </a>
+    {% endif %}
+    {% endwith %}
+
+    <div class="row g-4 mt-1">
+      {% for post in page_obj %}{% if not forloop.first or page_obj.number > 1 %}
+      <div class="col-md-6 col-lg-4" data-reveal>{% include "partials/_story.html" %}</div>
+      {% endif %}{% empty %}
+      <div class="col-12"><div class="empty-state"><i class="bi bi-journal-richtext"></i><h3>No stories published yet</h3><p>Stories from the field will appear here soon. Meanwhile, <a href="{% url 'news:gallery' %}">browse the gallery</a>.</p></div></div>
+      {% endfor %}
+    </div>
+    {% include "partials/_pagination.html" %}
+  </div>
+</section>
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band newsletter-band" data-reveal>
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-6"><h2>Get stories in your inbox</h2><p class="mb-0">One email a month: what we did, what it cost and who it helped.</p></div>
+        <div class="col-lg-6">
+          <form action="{% url 'community:subscribe' %}" method="post" data-newsletter class="d-flex gap-2">
+            {% csrf_token %}
+            <label for="nl-email-2" class="visually-hidden">Email address</label>
+            <input id="nl-email-2" type="email" name="email" class="form-control form-control-lg" placeholder="Your email" required>
+            <button class="btn btn-give btn-lg" type="submit">Subscribe</button>
+          </form>
+          <div data-newsletter-msg class="small mt-2" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
