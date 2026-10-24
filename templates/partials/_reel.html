@@ -1,0 +1,10 @@
+<a class="reel glightbox" href="{{ v.url }}" data-gallery="{{ reel_group|default:'reels' }}" data-title="{{ v.title }}" data-description="{{ v.caption }}" aria-label="Play video: {{ v.title }}">
+  {% if v.is_local %}
+  <video class="reel-media" src="{{ v.file.url }}" {% if v.poster_url %}poster="{{ v.poster_url }}"{% endif %} muted loop playsinline preload="none" aria-hidden="true"></video>
+  {% else %}
+  <img class="reel-media" src="{{ v.poster_url }}" alt="" loading="lazy">
+  {% endif %}
+  <span class="reel-badge"><i class="bi bi-play-circle-fill"></i> Watch</span>
+  <span class="reel-play" aria-hidden="true"><i class="bi bi-play-fill"></i></span>
+  <span class="reel-info"><strong>{{ v.title }}</strong>{% if v.caption %}<small>{{ v.caption }}</small>{% endif %}</span>
+</a>

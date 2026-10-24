@@ -1,0 +1,13 @@
+{% load humanize %}
+{% comment %} An indicator as an animated progress ring. Usage: {% include "partials/_ring.html" with ind=indicator %} {% endcomment %}
+<div class="ring-card">
+  <div class="ring" style="--p: {{ ind.progress_percent }}" role="img" aria-label="{{ ind.name }}: {{ ind.progress_percent }}% of target">
+    <svg viewBox="0 0 120 120" aria-hidden="true"><circle class="ring-track" cx="60" cy="60" r="52"/><circle class="ring-fill" cx="60" cy="60" r="52" pathLength="100"/></svg>
+    <span class="ring-value"><span data-count="{{ ind.progress_percent }}">{{ ind.progress_percent }}</span>%</span>
+  </div>
+  <div class="ring-body">
+    <span class="ring-area"><i class="bi bi-{{ ind.focus_area.icon }}"></i> {{ ind.focus_area.title }}</span>
+    <h3>{{ ind.name }}</h3>
+    <p><strong>{{ ind.current_value|floatformat:0|intcomma }}</strong> {{ ind.unit }} of {{ ind.target|floatformat:0|intcomma }} by {{ ind.target_year }}</p>
+  </div>
+</div>
