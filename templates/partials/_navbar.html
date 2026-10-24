@@ -1,0 +1,82 @@
+{% load static %}
+<div class="topbar d-none d-md-block">
+  <div class="container d-flex justify-content-between align-items-center py-2">
+    <div class="d-flex gap-4">
+      {% if site.phone %}<a href="tel:{{ site.phone|cut:' ' }}"><i class="bi bi-telephone me-1"></i>{{ site.phone }}</a>{% endif %}
+      {% if site.email %}<a href="mailto:{{ site.email }}"><i class="bi bi-envelope me-1"></i>{{ site.email }}</a>{% endif %}
+      <span><i class="bi bi-geo-alt me-1"></i>Kolwa Central, Kisumu East</span>
+    </div>
+    <div class="d-flex gap-3 align-items-center">
+      <a href="{% url 'community:help_request' %}">Request help</a>
+      <a href="{% url 'community:feedback' %}">Feedback</a>
+      <form action="{% url 'core:search' %}" method="get" role="search" class="d-flex">
+        <label for="top-search" class="visually-hidden">Search the site</label>
+        <input id="top-search" name="q" class="form-control form-control-sm py-1" style="width:160px;background:rgba(255,255,255,.1);border-color:rgba(255,255,255,.25);color:#fff" placeholder="Search…">
+      </form>
+    </div>
+  </div>
+</div>
+<nav class="navbar navbar-expand-lg site-nav sticky-nav" aria-label="Main">
+  <div class="container">
+    <a class="navbar-brand d-flex align-items-center gap-2" href="{% url 'core:home' %}">
+      <img src="{% static 'img/logo-mark.png' %}" alt="" width="40" height="52">
+      <span class="brand-text"><strong>PEFA GraceWorks</strong><small>Community Services</small></span>
+    </a>
+    <button class="navbar-toggler border-0" type="button" data-bs-toggle="collapse" data-bs-target="#mainNav" aria-controls="mainNav" aria-expanded="false" aria-label="Open menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    {% with p=request.path %}
+    <div class="collapse navbar-collapse" id="mainNav">
+      <ul class="navbar-nav ms-auto align-items-lg-center">
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/about' in p or '/governance' in p or '/service-charter' in p or '/partners' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Who we are</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'core:about' %}">Our story &amp; beliefs</a></li>
+            <li><a class="dropdown-item" href="{% url 'core:governance' %}">Leadership &amp; governance</a></li>
+            <li><a class="dropdown-item" href="{% url 'core:charter' %}">Service charter</a></li>
+            <li><a class="dropdown-item" href="{% url 'core:partners' %}">Partners</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/focus-areas' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Focus areas</a>
+          <ul class="dropdown-menu">
+            {% for area in nav_focus_areas %}
+            <li><a class="dropdown-item" href="{% url 'programs:detail' area.slug %}"><i class="bi bi-{{ area.icon }} me-2 text-primary"></i>{{ area.title }}</a></li>
+            {% endfor %}
+            <li><hr class="dropdown-divider"></li>
+            <li><a class="dropdown-item" href="{% url 'programs:list' %}">All focus areas</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/projects' in p or '/how-we-work' in p or '/impact' in p or '/events' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Our work</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'programs:projects' %}">Projects</a></li>
+            <li><a class="dropdown-item" href="{% url 'programs:approach' %}">How we work</a></li>
+            <li><a class="dropdown-item" href="{% url 'core:impact' %}">Our impact</a></li>
+            <li><a class="dropdown-item" href="{% url 'events:list' %}">Events</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/blog' in p or '/gallery' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Media</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'news:list' %}">Stories &amp; news</a></li>
+            <li><a class="dropdown-item" href="{% url 'news:gallery' %}">Gallery</a></li>
+          </ul>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle {% if '/volunteer' in p or '/partner-with-us' in p or '/get-involved' in p %}active{% endif %}" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Get involved</a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="{% url 'core:get_involved' %}">Ways to help</a></li>
+            <li><a class="dropdown-item" href="{% url 'community:volunteer' %}">Volunteer</a></li>
+            <li><a class="dropdown-item" href="{% url 'community:partner' %}">Partner with us</a></li>
+            <li><a class="dropdown-item" href="{% url 'community:help_request' %}">Request help</a></li>
+          </ul>
+        </li>
+        <li class="nav-item"><a class="nav-link {% if p == '/contact/' %}active{% endif %}" href="{% url 'community:contact' %}">Contact</a></li>
+        <li class="nav-item"><button class="theme-toggle nav-link" type="button" data-theme-toggle aria-label="Switch light or dark mode"><i data-theme-icon class="bi bi-moon-stars"></i></button></li>
+        <li class="nav-item ms-lg-2 my-2 my-lg-0"><a class="btn btn-give" href="{% url 'donations:donate' %}"><i class="bi bi-heart-fill me-1"></i> Donate</a></li>
+      </ul>
+    </div>
+    {% endwith %}
+  </div>
+</nav>

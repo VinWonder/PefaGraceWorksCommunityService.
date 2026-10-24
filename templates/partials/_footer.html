@@ -1,0 +1,65 @@
+{% load static %}
+<footer class="site-footer pt-5">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-4">
+        <img src="{% static 'img/logo-mark-white.png' %}" alt="" height="64" class="mb-3">
+        <p class="mb-2 text-white fw-semibold">{{ site.org_name }}</p>
+        <p class="fst-italic">{{ site.tagline }}</p>
+        {% if site.registration_number %}<p class="small mb-0">Registered CBO, Certificate No. {{ site.registration_number }}<br>{{ site.registered_under }}</p>{% endif %}
+        <div class="social mt-4">
+          {% if site.facebook %}<a href="{{ site.facebook }}" target="_blank" rel="noopener" aria-label="Facebook"><i class="bi bi-facebook"></i></a>{% endif %}
+          {% if site.x_twitter %}<a href="{{ site.x_twitter }}" target="_blank" rel="noopener" aria-label="X"><i class="bi bi-twitter-x"></i></a>{% endif %}
+          {% if site.instagram %}<a href="{{ site.instagram }}" target="_blank" rel="noopener" aria-label="Instagram"><i class="bi bi-instagram"></i></a>{% endif %}
+          {% if site.youtube %}<a href="{{ site.youtube }}" target="_blank" rel="noopener" aria-label="YouTube"><i class="bi bi-youtube"></i></a>{% endif %}
+          {% if site.linkedin %}<a href="{{ site.linkedin }}" target="_blank" rel="noopener" aria-label="LinkedIn"><i class="bi bi-linkedin"></i></a>{% endif %}
+          {% if site.tiktok %}<a href="{{ site.tiktok }}" target="_blank" rel="noopener" aria-label="TikTok"><i class="bi bi-tiktok"></i></a>{% endif %}
+          {% if site.whatsapp %}<a href="{{ site.whatsapp_link }}" target="_blank" rel="noopener" aria-label="WhatsApp"><i class="bi bi-whatsapp"></i></a>{% endif %}
+        </div>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h3>Who we are</h3>
+        <ul>
+          <li><a href="{% url 'core:about' %}">Our story</a></li>
+          <li><a href="{% url 'core:governance' %}">Governance</a></li>
+          <li><a href="{% url 'core:charter' %}">Service charter</a></li>
+          <li><a href="{% url 'core:partners' %}">Partners</a></li>
+          <li><a href="{% url 'core:impact' %}">Impact</a></li>
+        </ul>
+      </div>
+      <div class="col-6 col-lg-2">
+        <h3>Get involved</h3>
+        <ul>
+          <li><a href="{% url 'donations:donate' %}">Donate</a></li>
+          <li><a href="{% url 'community:volunteer' %}">Volunteer</a></li>
+          <li><a href="{% url 'community:partner' %}">Partner with us</a></li>
+          <li><a href="{% url 'community:help_request' %}">Request help</a></li>
+          <li><a href="{% url 'community:feedback' %}">Give feedback</a></li>
+        </ul>
+      </div>
+      <div class="col-lg-4">
+        <h3>Contact</h3>
+        <ul>
+          <li><i class="bi bi-geo-alt me-2"></i>{{ site.physical_location|default:site.address }}</li>
+          {% if site.phone %}<li><i class="bi bi-telephone me-2"></i><a href="tel:{{ site.phone|cut:' ' }}">{{ site.phone }}</a></li>{% endif %}
+          {% if site.email %}<li><i class="bi bi-envelope me-2"></i><a href="mailto:{{ site.email }}">{{ site.email }}</a></li>{% endif %}
+          {% if site.po_box %}<li><i class="bi bi-mailbox me-2"></i>{{ site.po_box }}</li>{% endif %}
+        </ul>
+        <div class="newsletter mt-4">
+          <h3 class="mb-2">Monthly updates</h3>
+          <form action="{% url 'community:subscribe' %}" method="post" data-newsletter class="d-flex gap-2">
+            {% csrf_token %}
+            <label for="nl-email" class="visually-hidden">Email address</label>
+            <input id="nl-email" type="email" name="email" class="form-control" placeholder="Your email" required>
+            <button class="btn btn-give" type="submit">Subscribe</button>
+          </form>
+          <div data-newsletter-msg class="small mt-2" aria-live="polite"></div>
+        </div>
+      </div>
+    </div>
+    <div class="footer-bottom mt-5 py-4 d-flex flex-wrap justify-content-between gap-2">
+      <span>&copy; <span data-year></span> {{ site.org_name }}. {{ site.closing_statement }}</span>
+      <span><a href="{% url 'core:privacy' %}">Privacy</a> &nbsp;·&nbsp; <a href="{% url 'community:feedback' %}">Complaints</a></span>
+    </div>
+  </div>
+</footer>
