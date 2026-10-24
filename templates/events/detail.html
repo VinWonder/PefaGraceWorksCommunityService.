@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block title %}{{ event.title }}{% endblock %}
+{% block meta_description %}{{ event.summary|default:event.title }}{% endblock %}
+{% block og_image %}{% if event.cover_url %}{{ request.scheme }}://{{ request.get_host }}{{ event.cover_url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
+{% block content %}
+{% url 'events:list' as events_url %}
+{% include "partials/_page_header.html" with title=event.title subtitle=event.summary parent_label="Events" parent_url=events_url bg=event.cover_url %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-7" data-reveal>
+        <div class="event-info-strip">
+          <div><i class="bi bi-calendar-event"></i><span><small>Date</small>{{ event.start|date:"l j F Y" }}</span></div>
+          <div><i class="bi bi-clock"></i><span><small>Time</small>{{ event.start|date:"g:i a" }} – {{ event.end|date:"g:i a" }}</span></div>
+          <div><i class="bi bi-geo-alt"></i><span><small>Venue</small>{{ event.venue }}</span></div>
+        </div>
+        {% if event.cover_url %}<div class="feature-img tilt my-4"><img src="{{ event.cover_url }}" alt=""><span class="event-kind kind-{{ event.kind }}">{{ event.get_kind_display }}</span></div>{% endif %}
+        {% if event.description %}<div class="prose">{{ event.description|safe }}</div>
+        {% elif event.summary %}<p class="lead">{{ event.summary }}</p>{% endif %}
+        {% if event.address %}<p class="mt-4"><i class="bi bi-signpost-split me-2 text-primary"></i>{{ event.address }}</p>{% endif %}
+        {% if event.focus_area %}<a class="album-chip mt-3" href="{{ event.focus_area.get_absolute_url }}">{% if event.focus_area.image %}<img src="{{ event.focus_area.image.url }}" alt="">{% endif %}<span>Part of our {{ event.focus_area.title }} work</span></a>{% endif %}
+        <div class="d-flex flex-wrap gap-2 mt-4 align-items-center">
+          <span class="fw-medium me-1">Share</span>
+          <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://wa.me/?text={{ event.title|urlencode }}%20{{ request.build_absolute_uri|urlencode }}"><i class="bi bi-whatsapp"></i> WhatsApp</a>
+          <a class="btn btn-quiet btn-sm" target="_blank" rel="noopener" href="https://www.facebook.com/sharer/sharer.php?u={{ request.build_absolute_uri|urlencode }}"><i class="bi bi-facebook"></i> Facebook</a>
+        </div>
+      </div>
+
+      <aside class="col-lg-5">
+        <div class="sticky-aside">
+          {% if event.is_upcoming %}
+          <div class="countdown countdown-card mb-4" data-countdown="{{ event.start|date:'c' }}" aria-label="Time until the event starts">
+            <div><span data-unit="d">--</span><small>days</small></div>
+            <div><span data-unit="h">--</span><small>hours</small></div>
+            <div><span data-unit="m">--</span><small>mins</small></div>
+            <div><span data-unit="s">--</span><small>secs</small></div>
+          </div>
+          {% endif %}
+
+          {% if event.can_register %}
+          <div class="register-card" id="register">
+            <div class="register-head">
+              <span class="register-icon"><i class="bi bi-ticket-perforated"></i></span>
+              <div><h2 class="h4 mb-0">Register for free</h2><p class="mb-0 small">It takes less than a minute.</p></div>
+            </div>
+            {% if event.capacity %}
+            <div class="progress progress-grace mt-3" role="progressbar" aria-label="Places taken" aria-valuenow="{{ event.fill_percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ event.fill_percent }}%"></div></div>
+            <div class="funding-figures"><span><strong>{{ event.spots_left }}</strong> place{{ event.spots_left|pluralize }} left</span><span>of {{ event.capacity }}</span></div>
+            {% endif %}
+            <form method="post" novalidate class="register-form mt-3">
+              {% csrf_token %}
+              {% include "partials/_form.html" %}
+              <button class="btn btn-give btn-lg w-100 btn-shine"><i class="bi bi-check2-circle me-1"></i> Confirm my place</button>
+              <p class="small text-muted-pg mt-3 mb-0"><i class="bi bi-lock me-1"></i>We only use your details for this event. See our <a href="{% url 'core:privacy' %}">privacy notice</a>.</p>
+            </form>
+          </div>
+          {% elif event.is_upcoming and event.registration_open %}
+          <div class="register-card text-center"><i class="bi bi-emoji-frown fs-1 text-muted-pg"></i><h2 class="h5 mt-2">This event is full</h2><p class="small mb-0">Call {{ site.phone }} to join the waiting list.</p></div>
+          {% elif event.is_upcoming %}
+          <div class="register-card text-center"><i class="bi bi-door-open fs-1 text-primary"></i><h2 class="h5 mt-2">No registration needed</h2><p class="small mb-0">Just come along. Everyone is welcome.</p></div>
+          {% else %}
+          <div class="register-card text-center"><i class="bi bi-check2-all fs-1 text-primary"></i><h2 class="h5 mt-2">This event has ended</h2><a href="{% url 'events:list' %}" class="btn btn-quiet btn-sm mt-2">See upcoming events</a></div>
+          {% endif %}
+          <a href="{% url 'events:ics' event.slug %}" class="btn btn-quiet w-100 mt-3"><i class="bi bi-calendar-plus me-1"></i> Add to my calendar</a>
+        </div>
+      </aside>
+    </div>
+  </div>
+</section>
+{% endblock %}

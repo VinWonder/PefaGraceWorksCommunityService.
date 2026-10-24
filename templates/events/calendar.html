@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Events calendar{% endblock %}
+{% block content %}
+{% url 'events:list' as events_url %}
+{% include "partials/_page_header.html" with title="Events calendar" parent_label="Events" parent_url=events_url %}
+<section class="section">
+  <div class="container">
+    <div class="calendar-shell" data-reveal>
+      <div class="calendar-legend">
+        <span><i style="background:var(--pg-lake)"></i>Outreach &amp; other</span>
+        <span><i style="background:#3f8a74"></i>Medical camp</span>
+        <span><i style="background:var(--pg-grace-deep)"></i>Fundraiser</span>
+        <a href="{% url 'events:list' %}" class="ms-auto"><i class="bi bi-list-ul me-1"></i>List view</a>
+      </div>
+      <div id="calendar" data-feed="{% url 'events:feed' %}"></div>
+    </div>
+  </div>
+</section>
+{% endblock %}
+{% block extra_js %}
+<script src="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.15/index.global.min.js"></script>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+  var el = document.getElementById("calendar");
+  var small = window.innerWidth < 768;
+  new FullCalendar.Calendar(el, {
+    initialView: small ? "listMonth" : "dayGridMonth",
+    headerToolbar: { left: "prev,next today", center: "title", right: small ? "" : "dayGridMonth,listMonth" },
+    events: el.dataset.feed,
+    height: "auto",
+    firstDay: 1
+  }).render();
+});
+</script>
+{% endblock %}

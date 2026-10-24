@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+{% block title %}Events{% endblock %}
+{% block content %}
+{% with next=upcoming.0 %}
+{% include "partials/_page_header.html" with title="Events" subtitle="Outreaches, medical camps, mentorship days and fellowships. Everyone is welcome." bg=next.cover_url %}
+
+{% if next %}
+{# ===== Next event spotlight with countdown ===== #}
+<section class="section pb-0">
+  <div class="container">
+    <div class="event-spotlight" data-reveal>
+      <div class="event-spotlight-img {% if not next.cover_url %}brand-fill{% endif %}">
+        {% if next.cover_url %}<img src="{{ next.cover_url }}" alt="" loading="lazy">{% else %}<i class="bi bi-calendar-heart"></i>{% endif %}
+        <span class="status-badge status-ongoing"><span class="pulse-dot"></span> Next event</span>
+      </div>
+      <div class="event-spotlight-body">
+        <span class="event-kind kind-{{ next.kind }}">{{ next.get_kind_display }}</span>
+        <h2>{{ next.title }}</h2>
+        {% if next.summary %}<p class="lead">{{ next.summary }}</p>{% endif %}
+        <ul class="event-facts">
+          <li><i class="bi bi-calendar-event"></i>{{ next.start|date:"l j F Y" }}</li>
+          <li><i class="bi bi-clock"></i>{{ next.start|date:"g:i a" }} – {{ next.end|date:"g:i a" }}</li>
+          <li><i class="bi bi-geo-alt"></i>{{ next.venue }}</li>
+        </ul>
+        <div class="countdown" data-countdown="{{ next.start|date:'c' }}" aria-label="Time until the event starts">
+          <div><span data-unit="d">--</span><small>days</small></div>
+          <div><span data-unit="h">--</span><small>hours</small></div>
+          <div><span data-unit="m">--</span><small>mins</small></div>
+          <div><span data-unit="s">--</span><small>secs</small></div>
+        </div>
+        <div class="d-flex flex-wrap gap-2">
+          <a href="{{ next.get_absolute_url }}" class="btn btn-give btn-lg btn-shine">{% if next.can_register %}Register free{% else %}See details{% endif %}</a>
+          <a href="{% url 'events:ics' next.slug %}" class="btn btn-quiet btn-lg"><i class="bi bi-calendar-plus me-1"></i> Add to calendar</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endwith %}
+
+<section class="section">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div><span class="eyebrow">What's on</span><h2 class="mb-0">Upcoming events</h2></div>
+      <a href="{% url 'events:calendar' %}" class="btn btn-quiet"><i class="bi bi-calendar3 me-1"></i> Calendar view</a>
+    </div>
+    <div class="row g-4">
+      {% for event in upcoming %}{% if not forloop.first %}
+      <div class="col-md-6 col-lg-4" data-reveal>{% include "events/_card.html" %}</div>
+      {% endif %}{% empty %}
+      <div class="col-12"><div class="empty-state"><i class="bi bi-calendar-heart"></i><h3>No upcoming events right now</h3><p>Follow us for outreach dates, or <a href="{% url 'community:contact' %}">invite us to your church or school</a>.</p></div></div>
+      {% endfor %}
+      {% if upcoming|length == 1 %}<div class="col-12"><p class="text-muted-pg mb-0">That's the only event on the calendar right now. More are added regularly.</p></div>{% endif %}
+    </div>
+  </div>
+</section>
+
+{% if past %}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="mb-4" data-reveal><span class="eyebrow">Looking back</span><h2 class="mb-0">Past events</h2></div>
+    <div class="row g-4">
+      {% for event in past %}<div class="col-md-6 col-lg-4" data-reveal>{% include "events/_card.html" with is_past=True %}</div>{% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+{% endblock %}

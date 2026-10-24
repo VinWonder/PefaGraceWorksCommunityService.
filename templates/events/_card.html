@@ -1,0 +1,16 @@
+<a class="event-card {% if is_past %}is-past{% endif %}" href="{{ event.get_absolute_url }}">
+  <div class="event-card-img {% if not event.cover_url %}brand-fill{% endif %}">
+    {% if event.cover_url %}<img src="{{ event.cover_url }}" alt="" loading="lazy">{% else %}<i class="bi bi-calendar-heart"></i>{% endif %}
+    <span class="event-date-badge"><strong>{{ event.start|date:"j" }}</strong>{{ event.start|date:"M" }}</span>
+    <span class="event-kind kind-{{ event.kind }}">{{ event.get_kind_display }}</span>
+  </div>
+  <div class="event-card-body">
+    <h3>{{ event.title }}</h3>
+    <div class="event-meta"><span><i class="bi bi-clock"></i> {{ event.start|date:"D j M, g:i a" }}</span><span><i class="bi bi-geo-alt"></i> {{ event.venue|truncatechars:42 }}</span></div>
+    {% if not is_past and event.capacity %}
+    <div class="progress mt-3" role="progressbar" aria-label="Places taken" aria-valuenow="{{ event.fill_percent }}" aria-valuemin="0" aria-valuemax="100"><div class="progress-bar" style="width: {{ event.fill_percent }}%"></div></div>
+    <div class="funding-figures"><span>{{ event.spots_left }} place{{ event.spots_left|pluralize }} left</span><span>{{ event.capacity }} total</span></div>
+    {% endif %}
+    <span class="focus-card-go mt-auto">{% if is_past %}See what happened{% elif event.can_register %}Register free{% else %}Details{% endif %} <i class="bi bi-arrow-right"></i></span>
+  </div>
+</a>
