@@ -1,0 +1,24 @@
+{% comment %} Renders one Bootstrap 5 form field. Usage: {% include "partials/_field.html" with field=form.name %} {% endcomment %}
+{% if field.field.widget.input_type == "checkbox" and not field.field.widget.allow_multiple_selected %}
+<div class="form-check mb-3">
+  {{ field }}
+  <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+  {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+  {% for e in field.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+</div>
+{% elif field.field.widget.input_type == "radio" or field.field.widget.allow_multiple_selected and field.field.widget.input_type == "checkbox" %}
+<fieldset class="mb-3">
+  <legend class="form-label fs-6">{{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}</legend>
+  <ul class="choice-list">
+    {% for choice in field %}<li><label for="{{ choice.id_for_label }}">{{ choice.tag }} {{ choice.choice_label }}</label></li>{% endfor %}
+  </ul>
+  {% for e in field.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+</fieldset>
+{% else %}
+<div class="mb-3">
+  <label class="form-label" for="{{ field.id_for_label }}">{{ field.label }}{% if field.field.required %} <span class="text-danger" aria-hidden="true">*</span>{% endif %}</label>
+  {{ field }}
+  {% if field.help_text %}<div class="form-text">{{ field.help_text }}</div>{% endif %}
+  {% for e in field.errors %}<div class="text-danger small mt-1">{{ e }}</div>{% endfor %}
+</div>
+{% endif %}

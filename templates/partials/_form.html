@@ -1,0 +1,8 @@
+{% comment %} Renders a whole form: non-field errors, the hidden honeypot, then each visible field. {% endcomment %}
+{% if form.non_field_errors %}
+<div class="alert alert-danger">{% for e in form.non_field_errors %}<div>{{ e }}</div>{% endfor %}</div>
+{% endif %}
+{% for field in form %}
+  {% if field.name == "website_url" %}<div class="hp-field" aria-hidden="true">{{ field }}</div>
+  {% else %}{% include "partials/_field.html" with field=field %}{% endif %}
+{% endfor %}
