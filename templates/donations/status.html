@@ -1,0 +1,63 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Your gift{% endblock %}
+{% block content %}
+<section class="donate-hero donate-hero-slim">
+  {% if header_photo %}<div class="donate-hero-bg" style="background-image:url('{{ header_photo }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative" style="max-width:720px">
+    <div class="donate-card text-center status-card">
+      {% if donation.method == "mpesa" %}
+      <div id="mpesa-status" data-check-url="{% url 'donations:status_json' donation.reference %}">
+        <div data-state="pending" {% if donation.status != "pending" %}hidden{% endif %}>
+          <div class="status-spinner mb-4"></div>
+          <h1 class="h3">Check your phone</h1>
+          <p class="lead">Enter your M-Pesa PIN on the prompt sent to <strong>{{ donation.phone }}</strong> to give <strong>KES {{ donation.amount|floatformat:0|intcomma }}</strong>.</p>
+          <p class="small text-muted-pg">This page updates by itself. Keep it open.</p>
+        </div>
+        <div data-state="completed" {% if donation.status != "completed" %}hidden{% endif %}>
+          <div class="thanks-burst"><i class="bi bi-heart-fill"></i></div>
+          <h1 class="h2 mt-3">Thank you, {{ donation.donor_name|default:"friend" }}!</h1>
+          <p class="lead">We received KES {{ donation.amount|floatformat:0|intcomma }} for {{ donation.designation }}.</p>
+          <p>M-Pesa receipt: <strong data-receipt>{{ donation.mpesa_receipt|default:"—" }}</strong><br>Our reference: <strong>{{ donation.reference }}</strong></p>
+        </div>
+        <div data-state="failed" {% if donation.status != "failed" and donation.status != "cancelled" %}hidden{% endif %}>
+          <i class="bi bi-x-circle text-danger" style="font-size:3.5rem"></i>
+          <h1 class="h3 mt-3">The payment didn't go through</h1>
+          <p data-message>{{ donation.result_description|default:"The request was cancelled or timed out." }}</p>
+          <a href="{% url 'donations:donate' %}?amount={{ donation.amount|floatformat:0 }}" class="btn btn-give">Try again</a>
+        </div>
+      </div>
+      {% elif donation.is_online_card %}
+        {% if donation.status == "completed" %}
+        <div class="thanks-burst"><i class="bi bi-heart-fill"></i></div>
+        <h1 class="h2 mt-3">Thank you, {{ donation.donor_name|default:"friend" }}!</h1>
+        <p class="lead">We received {{ donation.currency }} {{ donation.amount|floatformat:2|intcomma }} for {{ donation.designation }}.</p>
+        <p>{{ donation.get_method_display }} receipt: <strong>{{ donation.paypal_capture_id|default:"—" }}</strong><br>Our reference: <strong>{{ donation.reference }}</strong></p>
+        {% if donation.email %}<p class="small text-muted-pg">A receipt is on its way to {{ donation.email }}.</p>{% endif %}
+        {% else %}
+        <i class="bi bi-hourglass-split text-primary" style="font-size:3rem"></i>
+        <h1 class="h3 mt-3">Your gift isn't complete yet</h1>
+        <p>{{ donation.result_description|default:"Finish paying on the secure checkout to complete your gift." }}</p>
+        <a href="{% url 'donations:pay' donation.reference %}" class="btn btn-give">Complete payment</a>
+        {% endif %}
+      {% elif donation.method == "bank" %}
+      <i class="bi bi-bank text-primary" style="font-size:3rem"></i>
+      <h1 class="h3 mt-3">Thank you for your pledge</h1>
+      <p class="lead">Please transfer <strong>KES {{ donation.amount|floatformat:0|intcomma }}</strong> and use <strong>{{ donation.reference }}</strong> as the reference.</p>
+      {% if site.mpesa_paybill %}<p>M-Pesa Paybill <strong>{{ site.mpesa_paybill }}</strong>, account <strong>{{ donation.reference }}</strong></p>{% endif %}
+      {% if site.bank_details %}<div class="tile text-start" style="white-space:pre-line">{{ site.bank_details }}</div>{% endif %}
+      <p class="small text-muted-pg mt-3">We'll confirm once the funds arrive.</p>
+      {% else %}
+      <i class="bi bi-box2-heart text-primary" style="font-size:3rem"></i>
+      <h1 class="h3 mt-3">Thank you for your in-kind gift</h1>
+      <p class="lead">We'll call you to arrange collection or drop-off. Your reference is <strong>{{ donation.reference }}</strong>.</p>
+      {% endif %}
+      <div class="d-flex flex-wrap justify-content-center gap-2 mt-4">
+        <a href="https://wa.me/?text={{ 'I just gave to PEFA GraceWorks Community Services. Join me:'|urlencode }}%20{{ request.scheme }}://{{ request.get_host }}{% url 'donations:donate' %}" target="_blank" rel="noopener" class="btn btn-quiet"><i class="bi bi-whatsapp me-1"></i>Invite a friend</a>
+        <a href="{% url 'core:home' %}" class="btn btn-quiet">Back to the home page</a>
+      </div>
+    </div>
+  </div>
+  {% include "partials/_cradle.html" %}
+</section>
+{% endblock %}

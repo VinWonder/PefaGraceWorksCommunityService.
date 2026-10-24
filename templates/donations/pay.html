@@ -1,0 +1,89 @@
+{% extends "base.html" %}
+{% load humanize %}
+{% block title %}Complete your gift{% endblock %}
+{% block content %}
+<section class="donate-hero donate-hero-slim">
+  {% if header_photo %}<div class="donate-hero-bg" style="background-image:url('{{ header_photo }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative">
+    <div class="row g-4 justify-content-center">
+      <div class="col-lg-10">
+        <div class="donate-card pay-card">
+          <div class="row g-4 align-items-stretch">
+            <div class="col-md-5">
+              <div class="pay-summary">
+                <span class="eyebrow eyebrow-light">Your gift</span>
+                <div class="pay-amount">{{ donation.currency }} {{ donation.amount|floatformat:2|intcomma }}</div>
+                <dl>
+                  <dt>For</dt><dd>{{ donation.designation }}</dd>
+                  <dt>From</dt><dd>{{ donation.donor_name }}</dd>
+                  <dt>Reference</dt><dd>{{ donation.reference }}</dd>
+                  {% if donation.frequency == "monthly" %}<dt>Frequency</dt><dd>Monthly pledge</dd>{% endif %}
+                </dl>
+                <a href="{% url 'donations:donate' %}" class="small text-white-50"><i class="bi bi-arrow-left me-1"></i>Change amount or method</a>
+              </div>
+            </div>
+            <div class="col-md-7">
+              <h1 class="h3 mt-1">{% if donation.method == "card" %}Pay securely by card{% else %}Pay with PayPal{% endif %}</h1>
+              {% if paypal_ready %}
+              <p class="text-muted-pg">{% if donation.method == "card" %}Choose <strong>Debit or Credit Card</strong>. You don't need a PayPal account.{% else %}Log in to PayPal to complete your gift.{% endif %} Your card details go straight to PayPal; we never see them.</p>
+              <div id="paypal-buttons" class="paypal-buttons"
+                   data-method="{{ donation.method }}"
+                   data-create-url="{% url 'donations:paypal_create' donation.reference %}"
+                   data-capture-url="{% url 'donations:paypal_capture' donation.reference %}"
+                   data-csrf="{{ csrf_token }}">
+                <div class="paypal-loading"><span class="spinner-border spinner-border-sm me-2"></span>Loading secure checkout…</div>
+              </div>
+              <div class="alert alert-danger mt-3" data-paypal-error hidden></div>
+              {% else %}
+              <div class="alert alert-warning">
+                <strong>Card and PayPal payments are being set up.</strong> Your pledge is saved as <strong>{{ donation.reference }}</strong>. You can give right now by M-Pesa or bank transfer instead.
+              </div>
+              <div class="d-flex flex-wrap gap-2">
+                <a href="{% url 'donations:donate' %}?method=mpesa" class="btn btn-give"><i class="bi bi-phone me-1"></i>Give by M-Pesa</a>
+                <a href="{% url 'donations:donate' %}?method=bank" class="btn btn-quiet"><i class="bi bi-bank me-1"></i>Bank transfer</a>
+              </div>
+              {% endif %}
+              <p class="secure-note mt-4"><i class="bi bi-shield-lock-fill"></i> Payments processed by PayPal. Visa, Mastercard, American Express and PayPal accepted.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  {% include "partials/_cradle.html" %}
+</section>
+{% endblock %}
+{% block extra_js %}
+{% if paypal_ready %}
+<script src="https://www.paypal.com/sdk/js?client-id={{ paypal_client_id|urlencode }}&currency={{ donation.currency }}&intent=capture&enable-funding=card&disable-funding=paylater,venmo,credit"></script>
+<script>
+(function () {
+  "use strict";
+  var box = document.getElementById("paypal-buttons");
+  var errorBox = document.querySelector("[data-paypal-error]");
+  var showError = function (msg) { errorBox.textContent = msg || "Something went wrong. Please try again."; errorBox.hidden = false; };
+  var post = function (url, body) {
+    return fetch(url, { method: "POST", headers: { "X-CSRFToken": box.dataset.csrf, "Content-Type": "application/json" }, body: JSON.stringify(body || {}) })
+      .then(function (r) { return r.json().then(function (data) { if (!r.ok) throw new Error(data.error); return data; }); });
+  };
+  if (!window.paypal) { showError("PayPal could not load. Check your connection and refresh the page."); return; }
+  box.innerHTML = "";
+  var order = box.dataset.method === "card" ? [paypal.FUNDING.CARD, paypal.FUNDING.PAYPAL] : [paypal.FUNDING.PAYPAL, paypal.FUNDING.CARD];
+  order.forEach(function (source) {
+    var button = paypal.Buttons({
+      fundingSource: source,
+      style: { shape: "pill", height: 48, label: source === paypal.FUNDING.PAYPAL ? "donate" : undefined },
+      createOrder: function () { errorBox.hidden = true; return post(box.dataset.createUrl).then(function (d) { return d.id; }); },
+      onApprove: function () {
+        box.classList.add("is-busy");
+        return post(box.dataset.captureUrl).then(function (d) { window.location = d.redirect; })
+          .catch(function (e) { box.classList.remove("is-busy"); showError(e.message); });
+      },
+      onError: function (e) { showError(e && e.message); }
+    });
+    if (button.isEligible()) { var slot = document.createElement("div"); slot.className = "mb-2"; box.appendChild(slot); button.render(slot); }
+  });
+})();
+</script>
+{% endif %}
+{% endblock %}
