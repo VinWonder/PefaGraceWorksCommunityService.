@@ -1,0 +1,366 @@
+{% extends "base.html" %}
+{% load static humanize %}
+{% block title %}{{ site.tagline }}{% endblock %}
+{% block extra_head %}{% with first=slides.0 %}{% if first.image %}
+<link rel="preload" as="image" href="{{ first.image.url }}">{% endif %}{% endwith %}
+{% endblock %}
+{% block og_image %}{% with first=slides.0 %}{% if first.image %}{{ request.scheme }}://{{ request.get_host }}{{ first.image.url }}{% else %}{{ request.scheme }}://{{ request.get_host }}{% static 'img/logo.png' %}{% endif %}{% endwith %}{% endblock %}
+{% block content %}
+
+{# ===== Hero: cinematic photo slider with a live "reel" ===== #}
+<section class="hero" aria-label="Highlights">
+  <img class="hero-mark" src="{% static 'img/logo-mark-white.png' %}" alt="">
+  <div class="swiper hero-swiper">
+    <div class="swiper-wrapper">
+      {% for slide in slides %}
+      <div class="swiper-slide">
+        <div class="hero-slide">
+          <div class="bg {% if not slide.image %}no-image{% endif %}" {% if slide.image %}style="background-image:url('{{ slide.image.url }}')"{% endif %}></div>
+          {% if slide.image_credit %}<span class="photo-credit hero-credit">{{ slide.image_credit }}</span>{% endif %}
+          <div class="container">
+            <div class="row align-items-center g-5">
+              <div class="col-lg-7">
+                <div class="hero-content">
+                  <span class="hero-kicker"><span class="pulse-dot"></span>{% if forloop.first %}PEFA GraceWorks · Kisumu, Kenya{% else %}{{ forloop.counter|stringformat:"02d" }} / {{ slides|length|stringformat:"02d" }}{% endif %}</span>
+                  {% if forloop.first %}<h1>{{ slide.title }}</h1>{% else %}<h2 class="h1">{{ slide.title }}</h2>{% endif %}
+                  {% if slide.subtitle %}<p class="mb-4">{{ slide.subtitle }}</p>{% endif %}
+                  <div class="d-flex flex-wrap gap-2">
+                    {% if slide.button_text %}<a href="{{ slide.button_url }}" class="btn btn-give btn-lg btn-shine">{{ slide.button_text }}</a>{% endif %}
+                    <a href="{% url 'donations:donate' %}" class="btn btn-glass btn-lg"><i class="bi bi-heart-fill me-1"></i> Donate</a>
+                  </div>
+                </div>
+              </div>
+              {% if slide.video %}
+              <div class="col-lg-5 d-none d-lg-flex justify-content-center">
+                {% with v=videos.0 %}
+                <a class="hero-reel {% if v %}glightbox{% endif %}" {% if v %}href="{{ v.url }}" data-gallery="hero-reel" data-title="{{ v.title }}"{% else %}href="{% url 'news:gallery' %}"{% endif %} aria-label="Watch the full video">
+                  <video src="{{ slide.video.url }}" poster="{{ slide.image.url }}" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                  <span class="hero-reel-tag"><span class="pulse-dot"></span> Live from our church hall</span>
+                  <span class="hero-reel-cta"><i class="bi bi-volume-up-fill"></i> Tap to watch with sound</span>
+                </a>
+                {% endwith %}
+              </div>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <div class="swiper-slide">
+        <div class="hero-slide"><div class="bg no-image"></div>
+          <div class="container"><div class="hero-content">
+            <h1>{{ site.tagline }}</h1>
+            <p class="mb-4">{{ site.about_short }}</p>
+            <a href="{% url 'core:about' %}" class="btn btn-give btn-lg">Who we are</a>
+          </div></div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="hero-controls container">
+      <div class="swiper-pagination"></div>
+      <div class="d-flex gap-2">
+        <button class="hero-arrow hero-prev" aria-label="Previous slide"><i class="bi bi-arrow-left"></i></button>
+        <button class="hero-arrow hero-next" aria-label="Next slide"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+  </div>
+  <a href="#ribbon" class="scroll-cue" aria-label="Scroll down"><span></span></a>
+  {% include "partials/_cradle.html" %}
+</section>
+
+{# ===== Photo ribbon: real faces, always moving ===== #}
+{% if ribbon %}
+<section class="ribbon" id="ribbon" aria-label="Photos from our work">
+  {% for row in ribbon %}
+  <div class="ribbon-row {% if forloop.last %}reverse{% endif %}">
+    <div class="ribbon-track">
+      {% for p in row %}<a href="{{ p.album.get_absolute_url }}" class="ribbon-item"><img src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy"></a>{% endfor %}
+      {# second copy makes the loop seamless; hidden from screen readers and keyboard #}
+      {% for p in row %}<a href="{{ p.album.get_absolute_url }}" class="ribbon-item" aria-hidden="true" tabindex="-1"><img src="{{ p.image.url }}" alt="" loading="lazy"></a>{% endfor %}
+    </div>
+  </div>
+  {% endfor %}
+</section>
+{% endif %}
+
+{# ===== Vision ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6" data-reveal>
+        <span class="eyebrow">Our vision</span>
+        <p class="vision-quote">{{ site.vision }}</p>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <p class="lead">{{ site.mission }}</p>
+        <p class="text-muted-pg">{{ site.about_short }}</p>
+        <a href="{% url 'core:about' %}" class="btn btn-primary mt-2">Read our story <i class="bi bi-arrow-right ms-1"></i></a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Focus areas: photo card carousel ===== #}
+<section class="section bg-surface overflow-hidden">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div class="section-head mb-0">
+        <span class="eyebrow">What we do</span>
+        <h2>Five ways we serve</h2>
+        <p>Every program answers a real need in Kolwa Central and Kisumu East: spiritual, physical, educational, social and economic.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn-round focus-prev" aria-label="Previous focus area"><i class="bi bi-arrow-left"></i></button>
+        <button class="btn-round focus-next" aria-label="Next focus area"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="swiper focus-swiper" data-reveal>
+      <div class="swiper-wrapper">
+        {% for area in focus_areas %}
+        <div class="swiper-slide">
+          <a class="focus-card {% if not area.image %}no-image{% endif %}" href="{{ area.get_absolute_url }}">
+            {% if area.image %}<img src="{{ area.image.url }}" alt="" loading="lazy">{% endif %}
+            {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
+            <span class="focus-card-icon"><i class="bi bi-{{ area.icon }}"></i></span>
+            <span class="focus-card-body">
+              <span class="focus-card-num">0{{ forloop.counter }}</span>
+              <h3>{{ area.title }}</h3>
+              <p>{{ area.summary }}</p>
+              <span class="focus-card-go">Explore <i class="bi bi-arrow-right"></i></span>
+            </span>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Featured project ===== #}
+{% if featured_project %}
+<section class="section">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-6 order-lg-2" data-reveal>
+        <div class="feature-img tilt {% if not featured_project.image %}placeholder{% endif %}">
+          {% if featured_project.image %}<img src="{{ featured_project.image.url }}" alt="{{ featured_project.title }}" loading="lazy">{% else %}<img src="{% static 'img/logo-mark.png' %}" alt="">{% endif %}
+          <span class="feature-tag"><i class="bi bi-hospital"></i> Flagship project</span>
+        </div>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <span class="badge-soft mb-3 d-inline-block">{{ featured_project.get_status_display }}</span>
+        <h2>{{ featured_project.title }}</h2>
+        <p class="lead">{{ featured_project.summary }}</p>
+        {% if featured_project.target_outcome %}<p><strong>Target:</strong> {{ featured_project.target_outcome }}</p>{% endif %}
+        {% if featured_project.funding_goal %}
+        <div class="progress progress-grace mt-4" role="progressbar" aria-label="Funding progress" aria-valuenow="{{ featured_project.progress_percent }}" aria-valuemin="0" aria-valuemax="100">
+          <div class="progress-bar" data-progress="{{ featured_project.progress_percent }}" style="width: {{ featured_project.progress_percent }}%"></div>
+        </div>
+        <div class="funding-figures"><span><strong>KES {{ featured_project.amount_raised|floatformat:0|intcomma }}</strong> raised</span><span>Goal KES {{ featured_project.funding_goal|floatformat:0|intcomma }}</span></div>
+        {% endif %}
+        <div class="d-flex flex-wrap gap-2 mt-4">
+          <a href="{% url 'donations:donate' %}?project={{ featured_project.slug }}" class="btn btn-give btn-shine">Give to this project</a>
+          <a href="{{ featured_project.get_absolute_url }}" class="btn btn-quiet">About the project</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Impact counters over a real crowd ===== #}
+{% if stats %}
+<section class="section impact-band {% if impact_photo %}has-photo{% endif %}">
+  {% if impact_photo %}<div class="impact-bg" style="background-image:url('{{ impact_photo.image.url }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative">
+    <span class="eyebrow eyebrow-light">Our impact</span>
+    <h2 class="text-white mb-4">Where we are, where we're going</h2>
+    <div class="row g-4">
+      {% for s in stats %}
+      <div class="col-6 col-lg-3" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
+        <div class="stat">
+          <div class="num"><span data-count="{{ s.value }}">{{ s.value|intcomma }}</span><span class="suffix">{{ s.suffix }}</span></div>
+          <div class="label">{{ s.label }}</div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Reels: vertical videos, like the apps people already scroll ===== #}
+{% if videos %}
+<section class="section reels-band overflow-hidden">
+  <div class="container">
+    <div class="d-flex flex-wrap justify-content-between align-items-end gap-3 mb-4" data-reveal>
+      <div class="section-head mb-0">
+        <span class="eyebrow eyebrow-light">Watch</span>
+        <h2>Feel the joy</h2>
+        <p>Our children's ministry fills the church hall with songs, dance and worship every week. Turn the sound on.</p>
+      </div>
+      <div class="d-flex gap-2">
+        <button class="btn-round light reels-prev" aria-label="Previous video"><i class="bi bi-arrow-left"></i></button>
+        <button class="btn-round light reels-next" aria-label="Next video"><i class="bi bi-arrow-right"></i></button>
+      </div>
+    </div>
+    <div class="swiper reels-swiper">
+      <div class="swiper-wrapper">
+        {% for v in videos %}<div class="swiper-slide">{% include "partials/_reel.html" with reel_group="home-reels" %}</div>{% endfor %}
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Help desk + give ===== #}
+<section class="section">
+  <div class="container">
+    <div class="row g-4">
+      <div class="col-lg-6" data-reveal>
+        <div class="split-card">
+          <span class="split-icon"><i class="bi bi-life-preserver"></i></span>
+          <h2>Need help? Tell us.</h2>
+          <p class="lead">Families in Kolwa Central and Kisumu East can ask for support with school fees, sanitary towels, food, medical needs, water or skills training.</p>
+          <p class="text-muted-pg">Each request gets a fair, transparent vulnerability score so the most urgent cases are reviewed first, and you can follow your request with a reference number.</p>
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <a href="{% url 'community:help_request' %}" class="btn btn-primary">Request help</a>
+            <a href="{% url 'community:help_track' %}" class="btn btn-quiet">Track my request</a>
+          </div>
+        </div>
+      </div>
+      <div class="col-lg-6" data-reveal data-reveal-delay="1">
+        <div class="split-card give">
+          <span class="split-icon"><i class="bi bi-heart-fill"></i></span>
+          <h2>Want to give?</h2>
+          <p class="lead">Your gift pays school fees, buys sanitary towels and builds the clinic our neighbours need.</p>
+          {% if site.mpesa_paybill %}<p class="text-muted-pg">M-Pesa Paybill <strong>{{ site.mpesa_paybill }}</strong>{% if site.mpesa_account %}, account <strong>{{ site.mpesa_account }}</strong>{% endif %}, or give online and get an instant prompt on your phone.</p>{% endif %}
+          <div class="d-flex flex-wrap gap-2 mt-3">
+            <a href="{% url 'donations:donate' %}" class="btn btn-give btn-shine">Donate now</a>
+            <a href="{% url 'community:volunteer' %}" class="btn btn-quiet">Volunteer instead</a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Church block ===== #}
+<section class="section bg-mist">
+  <div class="container">
+    <div class="row g-5 align-items-center">
+      <div class="col-lg-5" data-reveal>
+        <div class="feature-img tilt {% if not site.church_block_image %}placeholder{% endif %}">
+          {% if site.church_block_image %}<img src="{{ site.church_block_image.url }}" alt="Church members with visiting mission partners" loading="lazy">{% else %}<img src="{% static 'img/logo.png' %}" alt="PEFA GraceWorks logo">{% endif %}
+        </div>
+      </div>
+      <div class="col-lg-7" data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Our roots</span>
+        <h2>{{ site.church_block_title }}</h2>
+        <div class="prose">{{ site.church_block_text|linebreaks }}</div>
+        <a href="{% url 'core:governance' %}" class="btn btn-quiet">Meet our leadership</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Coverflow gallery ===== #}
+{% if showcase %}
+<section class="section moments overflow-hidden">
+  <div class="container">
+    <div class="section-head text-center mx-auto" data-reveal>
+      <span class="eyebrow">Gallery</span>
+      <h2>Moments of grace</h2>
+      <p>Prison services, baptisms, medical camps and children's ministry: the real work, as it happened.</p>
+    </div>
+  </div>
+  <div class="swiper moments-swiper" data-reveal>
+    <div class="swiper-wrapper">
+      {% for p in showcase %}
+      <div class="swiper-slide">
+        <a href="{{ p.image.url }}" class="moment glightbox" data-gallery="moments" data-title="{{ p.caption }}" data-description="{{ p.album.title }}">
+          <img src="{{ p.image.url }}" alt="{{ p.caption }}" loading="lazy">
+          <span class="moment-caption"><small>{{ p.album.title }}</small>{{ p.caption }}</span>
+        </a>
+      </div>
+      {% endfor %}
+    </div>
+    <div class="swiper-pagination"></div>
+  </div>
+  <div class="container">
+    <div class="album-chips" data-reveal>
+      {% for a in albums %}<a class="album-chip" href="{{ a.get_absolute_url }}">{% if a.cover %}<img src="{{ a.cover.url }}" alt="" loading="lazy">{% endif %}<span>{{ a.title }}</span></a>{% endfor %}
+      <a class="album-chip all" href="{% url 'news:gallery' %}"><span>Open the full gallery <i class="bi bi-arrow-right"></i></span></a>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+{# ===== Scripture band ===== #}
+<section class="quote-band {% if quote_photo %}has-photo{% endif %}">
+  {% if quote_photo %}<div class="quote-bg" style="background-image:url('{{ quote_photo.image.url }}')" aria-hidden="true"></div>{% endif %}
+  <div class="container position-relative" data-reveal>
+    <blockquote>
+      <p>&ldquo;Faith by itself, if it is not accompanied by action, is dead.&rdquo;</p>
+      <footer>James 2:17 &middot; why we serve</footer>
+    </blockquote>
+    <a href="{% url 'core:get_involved' %}" class="btn btn-give btn-lg btn-shine mt-3">Put your faith to work</a>
+  </div>
+</section>
+
+{# ===== Events + stories ===== #}
+<section class="section bg-surface">
+  <div class="container">
+    <div class="row g-5">
+      <div class="col-lg-5" data-reveal>
+        <span class="eyebrow">Calendar</span>
+        <h2 class="mb-3">Coming up</h2>
+        {% for event in events %}{% include "partials/_event_row.html" %}{% empty %}
+        <p class="text-muted-pg">No events scheduled right now. Follow us for outreach dates, or <a href="{% url 'community:contact' %}">ask about inviting us</a>.</p>
+        {% endfor %}
+        <a href="{% url 'events:list' %}" class="btn btn-quiet mt-4">All events</a>
+      </div>
+      <div class="col-lg-7" data-reveal data-reveal-delay="1">
+        <span class="eyebrow">Stories</span>
+        <h2 class="mb-4">From the field</h2>
+        <div class="row g-4">
+          {% for post in posts|slice:":2" %}<div class="col-md-6">{% include "partials/_story.html" %}</div>{% empty %}
+          <p class="text-muted-pg">Stories from the field will appear here.</p>
+          {% endfor %}
+        </div>
+        <a href="{% url 'news:list' %}" class="btn btn-quiet mt-3">More stories</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+{# ===== Partners ===== #}
+<section class="section-tight">
+  <div class="container" data-reveal>
+    <h2 class="h4 mb-4">We work with</h2>
+    {% if partners %}
+    <div class="partner-logos">{% for p in partners %}<img src="{{ p.logo.url }}" alt="{{ p.name }}" loading="lazy">{% endfor %}</div>
+    {% else %}
+    <div class="d-flex flex-wrap gap-2">{% for p in partner_names %}<span class="partner-name">{{ p.name }}</span>{% endfor %}</div>
+    {% endif %}
+  </div>
+</section>
+
+{# ===== Volunteer CTA ===== #}
+<section class="pb-5">
+  <div class="container">
+    <div class="cta-band" data-reveal>
+      <div class="row g-4 align-items-center">
+        <div class="col-lg-8">
+          <h2>Volunteer your skills</h2>
+          <p class="mb-0">We're looking for people with a heart for service, from health workers and teachers to accountants, artisans and fundraisers.</p>
+        </div>
+        <div class="col-lg-4 text-lg-end">
+          <a href="{% url 'community:volunteer' %}" class="btn btn-give btn-lg btn-shine">Apply to volunteer</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endblock %}
