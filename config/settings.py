@@ -103,7 +103,12 @@ DATABASES = {
     "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
 }
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
+# Re-check kept-open connections before use: serverless Postgres (e.g. Neon) suspends after idle minutes.
+DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
 DATABASES["default"]["ATOMIC_REQUESTS"] = True
+if "-pooler" in DATABASES["default"].get("HOST", ""):
+    # PgBouncer transaction pooling (Neon's "pooled" connection string) can't hold server-side cursors.
+    DATABASES["default"]["DISABLE_SERVER_SIDE_CURSORS"] = True
 
 DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 
