@@ -397,6 +397,31 @@ Every `git push` to `main` redeploys automatically. Free-plan limits: the site s
 visitors (the next visit takes about a minute to wake it), and the free database expires after 30 days, so
 upgrade both to a paid plan before going live.
 
+### Option 0b — Railway
+
+Railway builds the `Dockerfile`; on start, `start.sh` migrates, loads content into a fresh database,
+creates the admin and runs Gunicorn. Railway has a 30-day free trial ($5 credit); after that the Hobby
+plan is $5/month. Media goes to Cloudinary as in Option 0.
+
+1. railway.com → sign in with GitHub → **New Project → Deploy from GitHub repo** → pick this repo.
+2. In the project: **+ Create → Database → PostgreSQL**.
+3. Web service → **Variables** → add:
+   ```ini
+   DATABASE_URL=${{Postgres.DATABASE_URL}}
+   SECRET_KEY=<a long random string>
+   DEBUG=False
+   WEB_CONCURRENCY=2
+   SEED_DEMO=1
+   CLOUDINARY_URL=cloudinary://...
+   DJANGO_SUPERUSER_USERNAME=...
+   DJANGO_SUPERUSER_EMAIL=...
+   DJANGO_SUPERUSER_PASSWORD=...
+   ```
+4. Web service → **Settings → Networking → Generate Domain**. If it asks for a port, use the one in the deploy
+   log line `Listening at: http://0.0.0.0:<port>`. The site is trusted
+   automatically through `RAILWAY_PUBLIC_DOMAIN`.
+5. Photos and videos: as in Option 0 step 4, using the Postgres service's **DATABASE_PUBLIC_URL**.
+
 ### Option A — Docker on a VPS (recommended)
 
 Any Ubuntu 22.04/24.04 VPS with 1–2 GB RAM is enough (e.g. a Kenyan host, DigitalOcean, Hetzner, Linode).
