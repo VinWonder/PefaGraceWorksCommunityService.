@@ -32,10 +32,12 @@
     const HERO_DELAY = 7000;
     heroEl.style.setProperty("--hero-delay", HERO_DELAY + "ms");
     const syncReels = (swiper) => {
+      // Play only the reel that is on screen: the floating one on laptops, the background one on phones.
       swiper.slides.forEach((slide, i) => {
-        const v = slide.querySelector("video");
-        if (!v) return;
-        if (i === swiper.activeIndex && !reduceMotion) v.play().catch(() => {}); else v.pause();
+        slide.querySelectorAll("video").forEach((v) => {
+          const visible = v.getClientRects().length > 0;  // false when it or any parent is display:none
+          if (i === swiper.activeIndex && visible && !reduceMotion && !saveData) v.play().catch(() => {}); else v.pause();
+        });
       });
     };
     new Swiper(heroEl, {
@@ -44,7 +46,6 @@
       fadeEffect: { crossFade: true },
       speed: reduceMotion ? 0 : 1100,
       autoplay: reduceMotion ? false : { delay: HERO_DELAY, disableOnInteraction: false, pauseOnMouseEnter: true },
-      pagination: { el: ".hero .swiper-pagination", clickable: true },
       navigation: { nextEl: ".hero-next", prevEl: ".hero-prev" },
       a11y: { enabled: true },
       keyboard: { enabled: true },

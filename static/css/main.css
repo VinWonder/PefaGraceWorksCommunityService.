@@ -99,7 +99,15 @@ a { text-underline-offset: 3px; }
 .hero h1, .hero h2 { color: #fff; }
 .hero-content p { font-family: var(--font-read); font-size: 1.25rem; color: #d7e7f3; max-width: 52ch; }
 .hero .swiper { height: min(92vh, 780px); min-height: 560px; }
-.hero-controls { position: absolute; left: 0; right: 0; bottom: clamp(6rem, 12vw, 10rem); z-index: 5; display: flex; justify-content: space-between; align-items: center; }
+/* Only the arrow buttons take clicks, so the controls never block the slide's own buttons */
+.hero-controls { position: absolute; left: 0; right: 0; bottom: clamp(6rem, 12vw, 10rem); z-index: 5; display: flex; justify-content: flex-end; align-items: center; pointer-events: none; }
+.hero-controls .hero-arrow { pointer-events: auto; }
+@media (max-width: 991.98px) { .hero-controls { display: none; } }
+.hero-bg-video { display: none; }
+@media (max-width: 991.98px) {
+  .hero-bg-video { display: block; position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+  .hero-slide .bg { background-color: #06284a; }
+}
 .hero-controls .swiper-pagination { position: static !important; width: auto !important; display: flex; gap: .5rem; }
 .hero .swiper-pagination-bullet { width: 44px; height: 4px; border-radius: 2px; background: rgba(255,255,255,.35); opacity: 1; margin: 0 !important; position: relative; overflow: hidden; }
 .hero .swiper-pagination-bullet-active::after { content: ""; position: absolute; inset: 0; background: var(--pg-grace); transform-origin: left; animation: bullet-fill var(--hero-delay, 7s) linear forwards; }

@@ -15,7 +15,10 @@
       {% for slide in slides %}
       <div class="swiper-slide">
         <div class="hero-slide">
-          <div class="bg {% if not slide.image %}no-image{% endif %}" {% if slide.image %}style="background-image:url('{{ slide.image.url }}')"{% endif %}></div>
+          <div class="bg {% if not slide.image %}no-image{% endif %}" {% if slide.image %}style="background-image:url('{{ slide.image.url }}')"{% endif %}>
+            {# Phones: the vertical reel fills the portrait screen behind the text (laptops get the floating reel instead) #}
+            {% if slide.video %}<video class="hero-bg-video" src="{{ slide.video.url }}" {% if slide.image %}poster="{{ slide.image.url }}"{% endif %} muted loop playsinline preload="none" aria-hidden="true"></video>{% endif %}
+          </div>
           {% if slide.image_credit %}<span class="photo-credit hero-credit">{{ slide.image_credit }}</span>{% endif %}
           <div class="container">
             <div class="row align-items-center g-5">
@@ -27,6 +30,7 @@
                   <div class="d-flex flex-wrap gap-2">
                     {% if slide.button_text %}<a href="{{ slide.button_url }}" class="btn btn-give btn-lg btn-shine">{{ slide.button_text }}</a>{% endif %}
                     <a href="{% url 'donations:donate' %}" class="btn btn-glass btn-lg"><i class="bi bi-heart-fill me-1"></i> Donate</a>
+                    {% if slide.video and videos %}{% with v=videos.0 %}<a href="{{ v.url }}" class="btn btn-glass btn-lg glightbox d-lg-none" data-gallery="hero-reel-mobile" data-title="{{ v.title }}"><i class="bi bi-play-circle-fill me-1"></i> Watch</a>{% endwith %}{% endif %}
                   </div>
                 </div>
               </div>
@@ -34,7 +38,7 @@
               <div class="col-lg-5 d-none d-lg-flex justify-content-center">
                 {% with v=videos.0 %}
                 <a class="hero-reel {% if v %}glightbox{% endif %}" {% if v %}href="{{ v.url }}" data-gallery="hero-reel" data-title="{{ v.title }}"{% else %}href="{% url 'news:gallery' %}"{% endif %} aria-label="Watch the full video">
-                  <video src="{{ slide.video.url }}" poster="{{ slide.image.url }}" autoplay muted loop playsinline preload="metadata" aria-hidden="true"></video>
+                  <video src="{{ slide.video.url }}" poster="{{ slide.image.url }}" muted loop playsinline preload="none" aria-hidden="true"></video>
                   <span class="hero-reel-tag"><span class="pulse-dot"></span> Live from our church hall</span>
                   <span class="hero-reel-cta"><i class="bi bi-volume-up-fill"></i> Tap to watch with sound</span>
                 </a>
@@ -58,7 +62,6 @@
       {% endfor %}
     </div>
     <div class="hero-controls container">
-      <div class="swiper-pagination"></div>
       <div class="d-flex gap-2">
         <button class="hero-arrow hero-prev" aria-label="Previous slide"><i class="bi bi-arrow-left"></i></button>
         <button class="hero-arrow hero-next" aria-label="Next slide"><i class="bi bi-arrow-right"></i></button>
