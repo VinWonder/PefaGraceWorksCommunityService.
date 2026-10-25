@@ -22,11 +22,13 @@ DEBUG = env("DEBUG")
 ALLOWED_HOSTS = env("ALLOWED_HOSTS")
 CSRF_TRUSTED_ORIGINS = env("CSRF_TRUSTED_ORIGINS")
 
-# Render gives every web service a public hostname, e.g. pefa-graceworks.onrender.com
-RENDER_EXTERNAL_HOSTNAME = env("RENDER_EXTERNAL_HOSTNAME", default="")
-if RENDER_EXTERNAL_HOSTNAME:
-    ALLOWED_HOSTS.append(RENDER_EXTERNAL_HOSTNAME)
-    CSRF_TRUSTED_ORIGINS.append(f"https://{RENDER_EXTERNAL_HOSTNAME}")
+# Hosting platforms announce the site's public hostname: Render (pefa-graceworks.onrender.com)
+# and Railway (pefa-graceworks.up.railway.app). Trust it automatically.
+for _var in ("RENDER_EXTERNAL_HOSTNAME", "RAILWAY_PUBLIC_DOMAIN"):
+    _host = env(_var, default="")
+    if _host:
+        ALLOWED_HOSTS.append(_host)
+        CSRF_TRUSTED_ORIGINS.append(f"https://{_host}")
 
 if DEBUG:
     # Let phones and other laptops on the same Wi-Fi open the development server
