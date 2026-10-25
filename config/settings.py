@@ -133,7 +133,30 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 # Uploaded photos and videos go to Cloudinary when CLOUDINARY_URL is set (needed on hosts whose disk is
 # wiped on each deploy, like Render's free plan); otherwise to MEDIA_ROOT. See apps/core/storage.py.
-CLOUDINARY_ENABLED = bool(env("CLOUDINARY_URL", default=""))
+def _clean_cloudinary_url():
+    """Forgive common copy-paste slips from the Cloudinary dashboard: quotes, spaces, or the whole
+    'CLOUDINARY_URL=cloudinary://...' line pasted as the value. The cloudinary library reads os.environ
+    directly, so the cleaned value is written back there."""
+    import os
+
+    from django.core.exceptions import ImproperlyConfigured
+
+    raw = os.environ.get("CLOUDINARY_URL", "")
+    value = raw.strip().strip("'\"<>").strip()
+    if value.upper().startswith("CLOUDINARY_URL="):
+        value = value.split("=", 1)[1].strip().strip("'\"<>").strip()
+    if not value:
+        os.environ.pop("CLOUDINARY_URL", None)
+        return ""
+    if not value.startswith("cloudinary://") or "@" not in value or "*" in value:
+        raise ImproperlyConfigured(
+            "CLOUDINARY_URL must look like cloudinary://<api_key>:<api_secret>@<cloud_name> "
+            "(copy it from the Cloudinary dashboard with the secret revealed, without quotes).")
+    os.environ["CLOUDINARY_URL"] = value
+    return value
+
+
+CLOUDINARY_ENABLED = bool(_clean_cloudinary_url())
 
 STORAGES = {
     "default": {"BACKEND": "cloudinary_storage.storage.MediaCloudinaryStorage" if CLOUDINARY_ENABLED
