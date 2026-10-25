@@ -16,7 +16,7 @@ class PublicPagesTest(TestCase):
 
     def test_pages_render(self):
         names = ["core:home", "core:about", "core:governance", "core:charter", "core:partners", "core:impact",
-                 "core:get_involved", "core:privacy", "programs:list", "programs:projects", "programs:approach",
+                 "core:get_involved", "core:privacy", "core:credits", "programs:list", "programs:projects", "programs:approach",
                  "news:list", "news:gallery", "events:list", "events:calendar", "donations:donate",
                  "community:contact", "community:volunteer", "community:partner", "community:feedback",
                  "community:feedback_track", "community:help_request", "community:help_track"]

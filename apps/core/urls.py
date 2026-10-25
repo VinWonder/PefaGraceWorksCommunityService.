@@ -13,5 +13,6 @@ urlpatterns = [
     path("impact/", views.impact, name="impact"),
     path("get-involved/", views.get_involved, name="get_involved"),
     path("privacy/", views.privacy, name="privacy"),
+    path("photo-credits/", views.photo_credits, name="credits"),
     path("search/", views.search, name="search"),
 ]

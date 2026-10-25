@@ -4,7 +4,6 @@
     {% if project.image %}<img src="{{ project.image.url }}" alt="" loading="lazy">
     {% else %}<div class="brand-fill"><i class="bi bi-{{ project.focus_area.icon|default:'stars' }}"></i></div>{% endif %}
     <span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>
-    {% if project.image_credit %}<span class="photo-credit">{{ project.image_credit }}</span>{% endif %}
   </div>
   <div class="project-card-body">
     {% if project.focus_area %}<span class="project-area"><i class="bi bi-{{ project.focus_area.icon }}"></i> {{ project.focus_area }}</span>{% endif %}

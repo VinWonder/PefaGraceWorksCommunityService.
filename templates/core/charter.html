@@ -3,7 +3,7 @@
 {% block title %}Service charter{% endblock %}
 {% block content %}
 {% static 'img/illustrative/kisumu-city.jpg' as charter_bg %}
-{% include "partials/_page_header.html" with title="Service charter" subtitle="Our public promise of transparency, accountability, compassion and professionalism." bg=charter_bg credit="Photo: Ckodero / Wikimedia Commons, CC BY-SA 4.0" %}
+{% include "partials/_page_header.html" with title="Service charter" subtitle="Our public promise of transparency, accountability, compassion and professionalism." bg=charter_bg %}
 
 {# ===== Principles ===== #}
 <section class="section">
@@ -40,7 +40,6 @@
         <a class="charter-card-img {% if not s.focus_area.image %}no-image{% endif %}" href="{{ s.focus_area.get_absolute_url }}">
           {% if s.focus_area.image %}<img src="{{ s.focus_area.image.url }}" alt="" loading="lazy">{% endif %}
           <span class="charter-card-title"><i class="bi bi-{{ s.focus_area.icon }}"></i> {{ s.focus_area.title }}</span>
-          {% if s.focus_area.image_credit %}<span class="photo-credit">{{ s.focus_area.image_credit }}</span>{% endif %}
         </a>
         <div class="charter-card-body">
           <div class="charter-row"><span class="charter-label"><i class="bi bi-box-seam"></i> Services offered</span><p>{{ s.services_offered }}</p></div>

@@ -5,7 +5,7 @@
 {% block og_image %}{% if area.image %}{{ request.scheme }}://{{ request.get_host }}{{ area.image.url }}{% else %}{{ block.super }}{% endif %}{% endblock %}
 {% block content %}
 {% url 'programs:list' as list_url %}
-{% if area.image %}{% include "partials/_page_header.html" with title=area.title subtitle=area.summary parent_label="Focus areas" parent_url=list_url bg=area.image.url credit=area.image_credit %}
+{% if area.image %}{% include "partials/_page_header.html" with title=area.title subtitle=area.summary parent_label="Focus areas" parent_url=list_url bg=area.image.url %}
 {% else %}{% include "partials/_page_header.html" with title=area.title subtitle=area.summary parent_label="Focus areas" parent_url=list_url %}{% endif %}
 
 {# ===== Intro: story + sticky support panel ===== #}
@@ -17,7 +17,6 @@
         <div class="feature-img tilt mb-4">
           <img src="{{ area.image.url }}" alt="">
           <span class="feature-tag"><i class="bi bi-{{ area.icon }}"></i> {{ area.title }}</span>
-          {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
         </div>
         {% endif %}
         <div class="prose">{{ area.description|safe }}</div>

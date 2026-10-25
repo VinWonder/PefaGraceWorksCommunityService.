@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load static %}
+{% block title %}Photo credits{% endblock %}
+{% block content %}
+{% include "partials/_page_header.html" with title="Photo credits" subtitle="Thank you to the photographers who share their work openly." %}
+<section class="section">
+  <div class="container" style="max-width:980px">
+    <p class="lead mb-5">Photos of our own work are taken by PEFA GraceWorks. Where we don't yet have photos of a program, such as the planned water and livelihood projects, we use openly licensed photos as illustrations. They show similar work, not our own beneficiaries.</p>
+    <div class="row g-4">
+      {% for file, title, author, licence, source, licence_url, used_on in photos %}
+      <div class="col-md-6" data-reveal>
+        <div class="partner-card">
+          <img src="{% static 'img/illustrative/'|add:file %}" alt="{{ title }}" loading="lazy" style="width:96px;height:72px;object-fit:cover;border-radius:12px;flex:none">
+          <div>
+            <h2 class="h6 mb-1"><a href="{{ source }}" target="_blank" rel="noopener">{{ title }} <i class="bi bi-box-arrow-up-right"></i></a></h2>
+            <p class="mb-1">By {{ author }}, <a href="{{ licence_url }}" target="_blank" rel="noopener">{{ licence }}</a>, via Wikimedia Commons. Resized for the web.</p>
+            <p class="mb-0 small">Used on: {{ used_on }}</p>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+    {% if others %}
+    <h2 class="h4 mt-5 mb-3">Other photos</h2>
+    <ul class="check-list">{% for credit, where in others %}<li>{{ credit }} <span class="text-muted-pg small">({{ where }})</span></li>{% endfor %}</ul>
+    {% endif %}
+  </div>
+</section>
+{% endblock %}

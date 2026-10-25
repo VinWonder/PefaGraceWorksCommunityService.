@@ -4,13 +4,13 @@
 {% block meta_description %}{{ project.summary }}{% endblock %}
 {% block content %}
 {% url 'programs:projects' as projects_url %}
-{% if project.image %}{% include "partials/_page_header.html" with title=project.title subtitle=project.summary parent_label="Projects" parent_url=projects_url bg=project.image.url credit=project.image_credit %}
+{% if project.image %}{% include "partials/_page_header.html" with title=project.title subtitle=project.summary parent_label="Projects" parent_url=projects_url bg=project.image.url %}
 {% else %}{% include "partials/_page_header.html" with title=project.title subtitle=project.summary parent_label="Projects" parent_url=projects_url %}{% endif %}
 <section class="section">
   <div class="container">
     <div class="row g-5">
       <div class="col-lg-7" data-reveal>
-        {% if project.image %}<div class="feature-img tilt mb-4"><img src="{{ project.image.url }}" alt=""><span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span>{% if project.image_credit %}<span class="photo-credit">{{ project.image_credit }}</span>{% endif %}</div>{% endif %}
+        {% if project.image %}<div class="feature-img tilt mb-4"><img src="{{ project.image.url }}" alt=""><span class="status-badge status-{{ project.status }}">{{ project.get_status_display }}</span></div>{% endif %}
         <div class="prose">{{ project.description|safe }}</div>
         {% if updates %}
         <h2 class="h3 mt-5 mb-3">Updates</h2>

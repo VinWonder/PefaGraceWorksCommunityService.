@@ -93,6 +93,46 @@ def privacy(request):
     return render(request, "core/privacy.html")
 
 
+# Openly licensed photos shipped in static/img/illustrative. Their licences require attribution, which this
+# page provides so the photos themselves can stay free of caption overlays.
+COMMONS_PHOTOS = [
+    ("water-hand-pump.jpg", "Children at the hand pump", "Emerymakini", "CC BY 4.0",
+     "https://commons.wikimedia.org/wiki/File:Children_at_the_hand_pump.jpg",
+     "https://creativecommons.org/licenses/by/4.0/", "Water and Sanitation; clean water slide"),
+    ("water-borehole-kilifi.jpg", "Hand pump borehole, Kilifi", "Nzili", "CC BY-SA 4.0",
+     "https://commons.wikimedia.org/wiki/File:Hand_pump_borehole_Kilifi.jpg",
+     "https://creativecommons.org/licenses/by-sa/4.0/", "Boreholes and Water Purification project"),
+    ("tailoring-training.jpg", "Couturière dans son atelier", "Minette Lontsie", "CC BY-SA 4.0",
+     "https://commons.wikimedia.org/wiki/File:Couturi%C3%A8re_dans_son_atelier.jpg",
+     "https://creativecommons.org/licenses/by-sa/4.0/", "Economic Empowerment"),
+    ("tailor-workshop.jpg", "A tailor at her workshop", "Maina Pat Mbae", "CC BY-SA 4.0",
+     "https://commons.wikimedia.org/wiki/File:A_tailor_at_her_workshop.jpg",
+     "https://creativecommons.org/licenses/by-sa/4.0/", "Vocational Skills and Livelihoods project"),
+    ("computer-class.jpg", "School at Ngong Road", "Peterkariukimutuura", "CC BY-SA 4.0",
+     "https://commons.wikimedia.org/wiki/File:School-at-Ngong-Road.jpg",
+     "https://creativecommons.org/licenses/by-sa/4.0/", "Community Hall and Resource Centre project"),
+    ("kisumu-city.jpg", "Kisumu city", "Ckodero", "CC BY-SA 4.0",
+     "https://commons.wikimedia.org/wiki/File:Kisumu_city.jpg_2.jpg",
+     "https://creativecommons.org/licenses/by-sa/4.0/", "Service charter page header"),
+    ("kisumu-lakefront.jpg", "Kisumu City", "Victor Ochieng'", "CC BY-SA 2.0",
+     "https://commons.wikimedia.org/wiki/File:Kisumu_City.jpg",
+     "https://creativecommons.org/licenses/by-sa/2.0/", "Partners page header"),
+]
+
+
+def photo_credits(request):
+    from apps.programs.models import FocusArea, Project
+
+    known = {author for _, _, author, *_ in COMMONS_PHOTOS}
+    # Credits staff type into the admin for photos added later (skipping the ones listed above)
+    others = []
+    for model, label in ((HeroSlide, "Home slide"), (FocusArea, "Focus area"), (Project, "Project")):
+        for obj in model.objects.exclude(image_credit=""):
+            if not any(author in obj.image_credit for author in known):
+                others.append((obj.image_credit, f"{label}: {obj}"))
+    return render(request, "core/credits.html", {"photos": COMMONS_PHOTOS, "others": others})
+
+
 def search(request):
     q = (request.GET.get("q") or "").strip()[:100]
     results = {}

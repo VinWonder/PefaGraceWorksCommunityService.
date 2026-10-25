@@ -9,7 +9,6 @@
       <div class="col-md-6 col-lg-4" data-reveal data-reveal-delay="{{ forloop.counter0 }}">
         <a class="focus-card {% if not area.image %}no-image{% endif %}" href="{{ area.get_absolute_url }}">
           {% if area.image %}<img src="{{ area.image.url }}" alt="" loading="lazy">{% endif %}
-          {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
           <span class="focus-card-icon"><i class="bi bi-{{ area.icon }}"></i></span>
           <span class="focus-card-body">
             <span class="focus-card-num">0{{ forloop.counter }}</span>

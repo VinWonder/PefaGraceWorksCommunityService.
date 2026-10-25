@@ -19,7 +19,6 @@
             {# Phones: the vertical reel fills the portrait screen behind the text (laptops get the floating reel instead) #}
             {% if slide.video %}<video class="hero-bg-video" src="{{ slide.video.url }}" {% if slide.image %}poster="{{ slide.image.url }}"{% endif %} muted loop playsinline preload="none" aria-hidden="true"></video>{% endif %}
           </div>
-          {% if slide.image_credit %}<span class="photo-credit hero-credit">{{ slide.image_credit }}</span>{% endif %}
           <div class="container">
             <div class="row align-items-center g-5">
               <div class="col-lg-7">
@@ -124,7 +123,6 @@
         <div class="swiper-slide">
           <a class="focus-card {% if not area.image %}no-image{% endif %}" href="{{ area.get_absolute_url }}">
             {% if area.image %}<img src="{{ area.image.url }}" alt="" loading="lazy">{% endif %}
-            {% if area.image_credit %}<span class="photo-credit">{{ area.image_credit }}</span>{% endif %}
             <span class="focus-card-icon"><i class="bi bi-{{ area.icon }}"></i></span>
             <span class="focus-card-body">
               <span class="focus-card-num">0{{ forloop.counter }}</span>
