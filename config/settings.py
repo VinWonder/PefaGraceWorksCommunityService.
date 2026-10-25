@@ -99,9 +99,28 @@ WSGI_APPLICATION = "config.wsgi.application"
 # Database: PostgreSQL (set DATABASE_URL in .env).
 # Falls back to SQLite only so you can try the site before Postgres is ready.
 # ---------------------------------------------------------------------------
-DATABASES = {
-    "default": env.db("DATABASE_URL", default=f"sqlite:///{BASE_DIR / 'db.sqlite3'}")
-}
+def _database_url():
+    """Forgive common copy-paste slips from hosting dashboards: quotes, spaces, the whole
+    'DATABASE_URL=...' line, or Neon's "psql 'postgresql://...'" command pasted as the value."""
+    import os
+    import re
+
+    from django.core.exceptions import ImproperlyConfigured
+
+    value = os.environ.get("DATABASE_URL", "").strip()
+    if not value:
+        return f"sqlite:///{BASE_DIR / 'db.sqlite3'}"  # try the site before Postgres is ready
+    found = re.search(r"(postgres(?:ql)?|sqlite)://[^\s'\"<>]+", value)
+    if not found:
+        raise ImproperlyConfigured(
+            "DATABASE_URL must start with postgresql:// (e.g. postgresql://user:password@host/dbname?sslmode=require). "
+            "Copy the connection string itself, not the psql command.")
+    if "****" in found.group(0):
+        raise ImproperlyConfigured("DATABASE_URL contains a hidden password (****). Reveal it before copying.")
+    return found.group(0)
+
+
+DATABASES = {"default": env.db_url_config(_database_url())}
 DATABASES["default"]["CONN_MAX_AGE"] = env.int("DB_CONN_MAX_AGE", default=60)
 # Re-check kept-open connections before use: serverless Postgres (e.g. Neon) suspends after idle minutes.
 DATABASES["default"]["CONN_HEALTH_CHECKS"] = True
