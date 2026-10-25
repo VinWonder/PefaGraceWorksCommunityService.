@@ -397,6 +397,20 @@ Every `git push` to `main` redeploys automatically. Free-plan limits: the site s
 visitors (the next visit takes about a minute to wake it), and the free database expires after 30 days, so
 upgrade both to a paid plan before going live.
 
+### Option 0a — Render web service + Neon database (free, no expiry)
+
+Render allows one free database per account but several free web services. Neon's free Postgres
+doesn't expire (1 GB, scales to zero after 5 idle minutes).
+
+1. neon.tech → new project (region *AWS Europe Central 1 (Frankfurt)*) → **Connect** → copy the connection
+   string (`postgresql://…neon.tech/neondb?sslmode=require…`).
+2. render.com → **New → Web Service** → this repo → Language **Python 3**, Region **Frankfurt**,
+   Build command `./build.sh`, Start command `gunicorn config.wsgi:application -c gunicorn.conf.py`, plan **Free**.
+3. Environment variables: `DATABASE_URL` (the Neon string), `SECRET_KEY`, `DEBUG=False`, `PYTHON_VERSION=3.12.7`,
+   `WEB_CONCURRENCY=2`, `CLOUDINARY_URL`, `DJANGO_SUPERUSER_USERNAME`, `DJANGO_SUPERUSER_EMAIL`,
+   `DJANGO_SUPERUSER_PASSWORD`.
+4. Photos and videos: as in Option 0 step 4, with the Neon string as `DATABASE_URL`.
+
 ### Option 0b — Railway
 
 Railway builds the `Dockerfile`; on start, `start.sh` migrates, loads content into a fresh database,
