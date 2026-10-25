@@ -1,0 +1,11 @@
+.git
+.venv
+venv
+.env
+__pycache__/
+*.pyc
+staticfiles/
+media/*
+!media/.gitkeep
+static/img/WhatsApp*
+.vscode

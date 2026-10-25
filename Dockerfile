@@ -18,4 +18,5 @@ RUN useradd --create-home appuser && chown -R appuser /app
 USER appuser
 
 EXPOSE 8000
-CMD ["gunicorn", "config.wsgi:application", "-c", "gunicorn.conf.py"]
+# Migrates, seeds a fresh database and creates the admin, then starts Gunicorn on $PORT (default 8000)
+CMD ["bash", "start.sh"]
